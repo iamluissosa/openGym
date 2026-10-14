@@ -17,10 +17,10 @@ if (!connectionString) {
 
 export const pool = new Pool({
   connectionString,
-  ssl: connectionString && /supabase\.co|aws|azure|sslmode=require/i.test(connectionString)
+  ssl: connectionString && /supabase\.co|pooler\.supabase\.com|aws|azure|sslmode=require/i.test(connectionString)
     ? { rejectUnauthorized: false }
     : false,
-  max: +(process.env.PG_POOL_MAX || 20),
+  max: +(process.env.PG_POOL_MAX || (process.env.VERCEL ? 4 : 20)),
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 10000
 });
