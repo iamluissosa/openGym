@@ -9,9 +9,12 @@ import {
   generateAuthenticationOptions, verifyAuthenticationResponse
 } from '@simplewebauthn/server';
 import webpush from 'web-push';
+import { query, pool } from './db.js';
 
+import { fileURLToPath } from 'node:url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = +(process.env.PORT || 3000);
-const DATA = process.env.DATA_DIR || '/data';
+const DATA = process.env.DATA_DIR || path.resolve(__dirname, '../data');
 const RP_ID = process.env.RP_ID || 'localhost';
 const ORIGIN = process.env.ORIGIN || 'http://localhost:8080';
 const RP_NAME = process.env.RP_NAME || 'openGym';
@@ -195,6 +198,23 @@ function requireAdmin(req, res) {
   if (!isAdmin(user)) { json(res, 403, { error: 'forbidden' }); return null; }
   return user;
 }
+
+// Guard for coach & admin operations
+async function requireCoachOrAdmin(req, res) {
+  const user = readSession(req);
+  if (!user) { json(res, 401, { error: 'not signed in' }); return null; }
+  if (isAdmin(user)) return user;
+  try {
+    const r = await query('SELECT role FROM users WHERE id = $1', [user.id]);
+    if (r.rows.length && (r.rows[0].role === 'ADMIN' || r.rows[0].role === 'COACH')) {
+      return { ...user, role: r.rows[0].role };
+    }
+  } catch (e) {
+    console.error('requireCoachOrAdmin error:', e.message);
+  }
+  json(res, 403, { error: 'forbidden' });
+  return null;
+}
 function sessionCookie(user) {
   return `gymsid=${makeSession(user)}; Path=/; Max-Age=${SESSION_DAYS * 86400}; HttpOnly;${SECURE} SameSite=Lax`;
 }
@@ -266,12 +286,26 @@ const routes = {
 
   'POST /api/register/options': async (req, res) => {
     const body = await readBody(req);
-    const name = String(body.name || '').trim().slice(0, 40);
+    let name = String(body.name || '').trim().slice(0, 40);
+    let uid = null;
+    const enrollmentToken = String(body.enrollmentToken || '').trim();
+
+    if (enrollmentToken) {
+      try {
+        const r = await query('SELECT id, name, email FROM users WHERE enrollment_token = $1 AND token_expires_at > NOW()', [enrollmentToken]);
+        if (!r.rows.length) return json(res, 400, { error: 'Enlace de activación inválido o expirado' });
+        uid = r.rows[0].id;
+        name = name || r.rows[0].name;
+      } catch (e) {
+        return json(res, 500, { error: 'Error al validar token de enrolamiento' });
+      }
+    }
+
     if (!name) return json(res, 400, { error: 'name required' });
     const code = String(body.code || '').trim().toUpperCase();
-    if (INVITE_ONLY && !db.invites.some(i => i.code === code && !i.usedBy && !i.revoked))
+    if (INVITE_ONLY && !enrollmentToken && !db.invites.some(i => i.code === code && !i.usedBy && !i.revoked))
       return json(res, 403, { error: 'a valid invite code is required' });
-    const uid = crypto.randomBytes(12).toString('base64url');
+    if (!uid) uid = crypto.randomBytes(12).toString('base64url');
     const options = await generateRegistrationOptions({
       rpName: RP_NAME, rpID: RP_ID,
       userID: Buffer.from(uid), userName: name, userDisplayName: name,
@@ -279,7 +313,7 @@ const routes = {
       authenticatorSelection: { residentKey: 'required', userVerification: 'preferred' },
       excludeCredentials: []
     });
-    const cid = putChallenge({ challenge: options.challenge, name, uid, code });
+    const cid = putChallenge({ challenge: options.challenge, name, uid, code, enrollmentToken });
     json(res, 200, { cid, options });
   },
 
@@ -302,7 +336,7 @@ const routes = {
     if (db.creds.find(x => x.id === credential.id)) return json(res, 409, { error: 'credential already registered' });
     // Re-check the invite at the last moment (it may have been used/revoked since options), then burn it.
     let invite = null;
-    if (INVITE_ONLY) {
+    if (INVITE_ONLY && !c.enrollmentToken) {
       invite = db.invites.find(i => i.code === c.code && !i.usedBy && !i.revoked);
       if (!invite) return json(res, 403, { error: 'invite code is no longer valid — ask for a new one' });
     }
@@ -316,6 +350,29 @@ const routes = {
       transports: body.credential?.response?.transports || []
     });
     saveDb();
+
+    // Sincronizar usuario y credencial en Supabase
+    if (c.enrollmentToken) {
+      try {
+        await query('UPDATE users SET enrollment_token = NULL, token_expires_at = NULL WHERE id = $1', [user.id]);
+      } catch (e) { console.error('Error clearing enrollment_token:', e.message); }
+    } else {
+      try {
+        await query(`
+          INSERT INTO users (id, name, role, is_active, created_at)
+          VALUES ($1, $2, 'ATHLETE', true, NOW())
+          ON CONFLICT (id) DO NOTHING;
+        `, [user.id, user.name]);
+      } catch (e) { console.error('Error saving user in Supabase:', e.message); }
+    }
+    try {
+      await query(`
+        INSERT INTO passkey_credentials (id, user_id, public_key, counter, transports)
+        VALUES ($1, $2, $3, $4, $5)
+        ON CONFLICT (id) DO UPDATE SET counter = EXCLUDED.counter;
+      `, [credential.id, user.id, Buffer.from(credential.publicKey).toString('base64url'), credential.counter || 0, body.credential?.response?.transports || []]);
+    } catch (e) { console.error('Error saving credential in Supabase:', e.message); }
+
     json(res, 200, { user: { id: user.id, name: user.name, admin: isAdmin(user) } }, { 'Set-Cookie': sessionCookie(user) });
   },
 
@@ -388,6 +445,13 @@ const routes = {
     if (!body.state || typeof body.state !== 'object') return json(res, 400, { error: 'state required' });
     delete body.state.active;              // in-progress workouts stay device-local
     atomicWrite(stateFile(user.id), JSON.stringify(body.state));
+    try {
+      await query(`
+        INSERT INTO user_states (user_id, state, updated_at)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (user_id) DO UPDATE SET state = EXCLUDED.state, updated_at = EXCLUDED.updated_at;
+      `, [user.id, JSON.stringify(body.state), body.state._ts || Date.now()]);
+    } catch (e) { console.warn('Supabase user_states sync error:', e.message); }
     json(res, 200, { ok: true, ts: body.state._ts || null });
   },
 
@@ -538,6 +602,245 @@ const routes = {
     db.invites = db.invites.filter(i => i.code !== inv.code);
     saveDb();
     json(res, 200, { ok: true });
+  },
+
+  /* ---------- coach / athletes management & prescription ---------- */
+  'GET /api/admin/athletes': async (req, res) => {
+    const caller = await requireCoachOrAdmin(req, res);
+    if (!caller) return;
+    try {
+      const resAthletes = await query(`
+        SELECT u.id, u.name, u.email, u.role, u.is_active, u.created_at,
+               (SELECT COUNT(*)::int FROM daily_assignments da WHERE da.athlete_id = u.id) as total_assignments,
+               (SELECT status FROM daily_assignments da WHERE da.athlete_id = u.id AND da.scheduled_date = CURRENT_DATE) as today_status
+        FROM users u
+        WHERE u.role = 'ATHLETE'
+        ORDER BY u.created_at DESC;
+      `);
+      json(res, 200, { athletes: resAthletes.rows });
+    } catch (err) {
+      console.error('GET /api/admin/athletes error:', err);
+      json(res, 500, { error: 'Error al consultar atletas' });
+    }
+  },
+
+  'POST /api/admin/athletes': async (req, res) => {
+    const caller = await requireCoachOrAdmin(req, res);
+    if (!caller) return;
+    const body = await readBody(req);
+    const name = String(body.name || '').trim().slice(0, 80);
+    const email = String(body.email || '').trim().toLowerCase().slice(0, 120);
+    if (!name || !email) return json(res, 400, { error: 'Nombre y correo electrónico son requeridos' });
+
+    const athleteId = crypto.randomBytes(12).toString('base64url');
+    const enrollmentToken = crypto.randomBytes(24).toString('hex');
+    const expiresAt = new Date(Date.now() + 7 * 86400000); // 7 días
+
+    try {
+      const result = await query(`
+        INSERT INTO users (id, name, email, role, coach_id, enrollment_token, token_expires_at)
+        VALUES ($1, $2, $3, 'ATHLETE', $4, $5, $6)
+        RETURNING id, name, email, role, enrollment_token, token_expires_at;
+      `, [athleteId, name, email, caller.id, enrollmentToken, expiresAt]);
+
+      // Mantener en db.users para sincronización local si es necesario
+      if (!db.users.some(u => u.id === athleteId)) {
+        db.users.push({ id: athleteId, name, email, created: new Date().toISOString() });
+        saveDb();
+      }
+
+      const athlete = result.rows[0];
+      const enrollmentUrl = `${ORIGIN}/?enroll=${enrollmentToken}`;
+      json(res, 201, { athlete, enrollmentUrl });
+    } catch (err) {
+      if (err.code === '23505') return json(res, 409, { error: 'El correo electrónico ya está registrado' });
+      console.error('POST /api/admin/athletes error:', err);
+      json(res, 500, { error: 'Error al registrar atleta en base de datos' });
+    }
+  },
+
+  'GET /api/enroll/verify': async (req, res) => {
+    const token = new URL(req.url, 'http://x').searchParams.get('token');
+    if (!token) return json(res, 400, { error: 'Token no provisto' });
+    try {
+      const resToken = await query(`
+        SELECT id, name, email, token_expires_at
+        FROM users
+        WHERE enrollment_token = $1 AND token_expires_at > NOW();
+      `, [token]);
+      if (!resToken.rows.length) return json(res, 404, { valid: false, error: 'Token inválido o expirado' });
+      json(res, 200, { valid: true, athlete: resToken.rows[0] });
+    } catch (err) {
+      console.error('GET /api/enroll/verify error:', err);
+      json(res, 500, { error: 'Error al verificar token' });
+    }
+  },
+
+  'GET /api/coach/templates': async (req, res) => {
+    const caller = await requireCoachOrAdmin(req, res);
+    if (!caller) return;
+    try {
+      const resTpl = await query(`
+        SELECT id, coach_id, name, description, emoji, progression_policy, exercises, created_at, updated_at
+        FROM routine_templates
+        ORDER BY updated_at DESC;
+      `);
+      json(res, 200, { templates: resTpl.rows });
+    } catch (err) {
+      console.error('GET /api/coach/templates error:', err);
+      json(res, 500, { error: 'Error al obtener plantillas' });
+    }
+  },
+
+  'POST /api/coach/templates': async (req, res) => {
+    const caller = await requireCoachOrAdmin(req, res);
+    if (!caller) return;
+    const body = await readBody(req);
+    const name = String(body.name || '').trim().slice(0, 100);
+    if (!name) return json(res, 400, { error: 'Nombre de rutina requerido' });
+    const templateId = String(body.id || '').trim() || ('tpl_' + crypto.randomBytes(10).toString('base64url'));
+    const description = String(body.description || '').slice(0, 500);
+    const emoji = String(body.emoji || 'dumbbell').slice(0, 32);
+    const progressionPolicy = String(body.progression_policy || 'linear').slice(0, 32);
+    const exercises = Array.isArray(body.exercises) ? body.exercises : [];
+
+    try {
+      const resTpl = await query(`
+        INSERT INTO routine_templates (id, coach_id, name, description, emoji, progression_policy, exercises)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        ON CONFLICT (id) DO UPDATE SET
+          name = EXCLUDED.name,
+          description = EXCLUDED.description,
+          emoji = EXCLUDED.emoji,
+          progression_policy = EXCLUDED.progression_policy,
+          exercises = EXCLUDED.exercises
+        RETURNING *;
+      `, [templateId, caller.id, name, description, emoji, progressionPolicy, JSON.stringify(exercises)]);
+      json(res, 200, { template: resTpl.rows[0] });
+    } catch (err) {
+      console.error('POST /api/coach/templates error:', err);
+      json(res, 500, { error: 'Error al guardar plantilla' });
+    }
+  },
+
+  'POST /api/coach/assign-routine': async (req, res) => {
+    const caller = await requireCoachOrAdmin(req, res);
+    if (!caller) return;
+    const body = await readBody(req);
+    const { athleteIds, scheduledDate, routine, routineTemplateId } = body;
+    if (!Array.isArray(athleteIds) || !athleteIds.length || !scheduledDate || !routine) {
+      return json(res, 400, { error: 'Se requiere lista de atletas, fecha programada y datos de rutina' });
+    }
+
+    try {
+      const assigned = [];
+      for (const athleteId of athleteIds) {
+        const asgnId = 'asgn_' + crypto.randomBytes(12).toString('base64url');
+        const r = await query(`
+          INSERT INTO daily_assignments (id, athlete_id, coach_id, scheduled_date, routine_template_id, routine_payload, status)
+          VALUES ($1, $2, $3, $4, $5, $6, 'PENDING')
+          ON CONFLICT (athlete_id, scheduled_date)
+          DO UPDATE SET
+            routine_payload = EXCLUDED.routine_payload,
+            status = 'PENDING',
+            coach_id = EXCLUDED.coach_id,
+            confirmed_at = NULL
+          RETURNING *;
+        `, [asgnId, athleteId, caller.id, scheduledDate, routineTemplateId || null, JSON.stringify(routine)]);
+        assigned.push(r.rows[0]);
+
+        // Enviar notificación Push al atleta
+        sendPush(athleteId, {
+          title: `🏋️ Nueva Rutina: ${routine.name}`,
+          body: `Tu entrenador programó tu sesión para el ${scheduledDate}. ¡Confirma tu día!`,
+          tag: 'routine-assigned'
+        }).catch(() => {});
+      }
+      json(res, 200, { ok: true, count: assigned.length, assignments: assigned });
+    } catch (err) {
+      console.error('POST /api/coach/assign-routine error:', err);
+      json(res, 500, { error: 'Error al procesar asignación' });
+    }
+  },
+
+  'GET /api/coach/assignments': async (req, res) => {
+    const caller = await requireCoachOrAdmin(req, res);
+    if (!caller) return;
+    const dateParam = new URL(req.url, 'http://x').searchParams.get('date');
+    const targetDate = dateParam || new Date().toISOString().slice(0, 10);
+    try {
+      const resAsgn = await query(`
+        SELECT da.id, da.athlete_id, u.name as athlete_name, u.email as athlete_email,
+               da.scheduled_date, da.routine_payload, da.status, da.athlete_notes,
+               da.session_rpe, da.confirmed_at, da.completed_at, da.created_at
+        FROM daily_assignments da
+        JOIN users u ON u.id = da.athlete_id
+        WHERE da.scheduled_date = $1
+        ORDER BY da.created_at DESC;
+      `, [targetDate]);
+      json(res, 200, { assignments: resAsgn.rows, date: targetDate });
+    } catch (err) {
+      console.error('GET /api/coach/assignments error:', err);
+      json(res, 500, { error: 'Error al consultar asignaciones' });
+    }
+  },
+
+  'GET /api/athlete/routine/today': async (req, res) => {
+    const user = readSession(req);
+    if (!user) return json(res, 401, { error: 'not signed in' });
+    const dateParam = new URL(req.url, 'http://x').searchParams.get('date');
+    const targetDate = dateParam || new Date().toISOString().slice(0, 10);
+    try {
+      const resAsgn = await query(`
+        SELECT da.id, da.scheduled_date, da.routine_payload, da.status, da.athlete_notes,
+               da.session_rpe, da.confirmed_at, da.completed_at, u.name as coach_name
+        FROM daily_assignments da
+        LEFT JOIN users u ON u.id = da.coach_id
+        WHERE da.athlete_id = $1 AND da.scheduled_date = $2;
+      `, [user.id, targetDate]);
+      json(res, 200, { assignment: resAsgn.rows[0] || null });
+    } catch (err) {
+      console.error('GET /api/athlete/routine/today error:', err);
+      json(res, 500, { error: 'Error al consultar rutina de hoy' });
+    }
+  },
+
+  'POST /api/athlete/routine/confirm': async (req, res) => {
+    const user = readSession(req);
+    if (!user) return json(res, 401, { error: 'not signed in' });
+    const body = await readBody(req);
+    const { date, status, notes } = body;
+    const targetDate = date || new Date().toISOString().slice(0, 10);
+    if (!['CONFIRMED', 'REJECTED'].includes(status)) {
+      return json(res, 400, { error: 'El estado debe ser CONFIRMED o REJECTED' });
+    }
+
+    try {
+      const resUpd = await query(`
+        UPDATE daily_assignments
+        SET status = $1, athlete_notes = COALESCE($2, athlete_notes), confirmed_at = NOW()
+        WHERE athlete_id = $3 AND scheduled_date = $4
+        RETURNING id, athlete_id, coach_id, scheduled_date, status, athlete_notes, confirmed_at;
+      `, [status, notes || null, user.id, targetDate]);
+
+      if (!resUpd.rows.length) {
+        return json(res, 404, { error: 'No se encontró rutina asignada para la fecha indicada' });
+      }
+
+      const asgn = resUpd.rows[0];
+      if (asgn.coach_id) {
+        sendPush(asgn.coach_id, {
+          title: (status === 'CONFIRMED' ? '✅ ' : '⚠️ ') + user.name + (status === 'CONFIRMED' ? ' confirmó rutina' : ' reportó descanso'),
+          body: notes ? `Nota: "${notes}"` : `Para la sesión de hoy (${targetDate})`,
+          tag: 'athlete-confirm'
+        }).catch(() => {});
+      }
+
+      json(res, 200, { ok: true, assignment: asgn });
+    } catch (err) {
+      console.error('POST /api/athlete/routine/confirm error:', err);
+      json(res, 500, { error: 'Error al confirmar rutina' });
+    }
   }
 };
 

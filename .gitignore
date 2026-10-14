@@ -1,0 +1,24 @@
+# Entornos y Secretos
+.env
+.env.local
+data/secret
+data/vapid.json
+
+# Dependencias
+node_modules/
+api/node_modules/
+frontend/node_modules/
+
+# Compilados y artefactos
+dist/
+dist-ssr/
+*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
