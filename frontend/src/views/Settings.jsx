@@ -81,7 +81,7 @@ export default function Settings() {
       try {
         const data = JSON.parse(rd.result);
         if (!data.workouts || !data.routines)
-          throw new Error("not an openGym backup");
+          throw new Error("not a balackGym backup");
         confirmSheet({
           title: t("Import backup?"),
           message: t("This replaces all current data with the backup file."),
@@ -178,7 +178,7 @@ export default function Settings() {
             <Row
               icon="rocket"
               iconTint="var(--indigo)"
-              title={t("Self-host openGym")}
+              title={t("Self-host balackGym")}
               subtitle={t(
                 "Passkey sign-in, sync across your devices, your own data."
               )}
@@ -219,7 +219,7 @@ export default function Settings() {
             <Row
               icon="rocket"
               iconTint="var(--indigo)"
-              title={t("Self-host openGym")}
+              title={t("Self-host balackGym")}
               subtitle={t(
                 "Passkey sign-in, sync across your devices, your own data."
               )}
@@ -603,7 +603,7 @@ export default function Settings() {
                 : t("In Safari: Share → Add to Home Screen")
             }
             subtitle={
-              t("to install openGym as a full-screen app.") +
+              t("to install balackGym as a full-screen app.") +
               " " +
               (user
                 ? t(
@@ -621,7 +621,7 @@ export default function Settings() {
         className="dim small"
         style={{ textAlign: "center", marginTop: 4, lineHeight: 1.6 }}
       >
-        openGym · {t("free & open source (AGPL v3)")}
+        balackGym · {t("free & open source (AGPL v3)")}
         <br />
         <a
           href="https://github.com/DuarteSantos8/openGym"
@@ -823,7 +823,7 @@ function PushCard({ S, update, toast }) {
           icon="bell"
           iconTint="var(--red)"
           title={t("Push notifications")}
-          subtitle={t("Rest-timer alerts, even if openGym is closed.")}
+          subtitle={t("Rest-timer alerts, even if balackGym is closed.")}
         >
           <Switch checked={on} disabled={busy} onChange={toggle} />
         </Row>

@@ -101,7 +101,7 @@ export default function Home() {
     <div className="narrow">
       <div className="hdr">
         <div>
-          <h1>{user ? t("Hi {0}", user.name) : "openGym"}</h1>
+          <h1>{user ? t("Hi {0}", user.name) : "balackGym"}</h1>
           <div className="sub">
             {today.toLocaleDateString(dateLocale(), {
               weekday: "long",
