@@ -385,7 +385,8 @@ const routes = {
       const existing = await query('SELECT id FROM passkey_credentials WHERE id = $1', [credential.id]);
       if (existing.rows.length) return json(res, 409, { error: 'credential already registered' });
     } catch (e) {
-      return json(res, 500, { error: 'Error al verificar credencial existente' });
+      console.error('[DB Error] al verificar credencial existente:', e.message);
+      return json(res, 500, { error: 'Error en base de datos: ' + e.message });
     }
 
     if (INVITE_ONLY && !c.enrollmentToken) {
@@ -427,7 +428,7 @@ const routes = {
       `, [credential.id, user.id, Buffer.from(credential.publicKey).toString('base64url'), credential.counter || 0, body.credential?.response?.transports || []]);
     } catch (e) {
       console.error('Error saving user/credential in DB:', e.message);
-      return json(res, 500, { error: 'Error al registrar credencial en base de datos' });
+      return json(res, 500, { error: 'Error al registrar credencial en base de datos: ' + e.message });
     }
 
     json(res, 200, { user: { id: user.id, name: user.name, role: user.role, admin: isAdmin(user) } }, { 'Set-Cookie': sessionCookie(user, req) });
