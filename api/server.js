@@ -204,10 +204,43 @@ async function requireCoachOrAdmin(req, res) {
   return null;
 }
 
-function sessionCookie(user) {
-  return `gymsid=${makeSession(user)}; Path=/; Max-Age=${SESSION_DAYS * 86400}; HttpOnly;${SECURE} SameSite=Lax`;
+function getOrigin(req) {
+  if (process.env.ORIGIN && !process.env.ORIGIN.includes('localhost')) {
+    return process.env.ORIGIN.replace(/\/$/, '');
+  }
+  const originHeader = req?.headers?.origin;
+  if (originHeader) return originHeader.replace(/\/$/, '');
+  const proto = req?.headers?.['x-forwarded-proto'] || (req?.socket?.encrypted ? 'https' : 'http');
+  const host = req?.headers?.['x-forwarded-host'] || req?.headers?.host;
+  if (host) return `${proto}://${host}`;
+  return process.env.ORIGIN || 'http://localhost:8080';
 }
-const clearCookie = `gymsid=; Path=/; Max-Age=0; HttpOnly;${SECURE} SameSite=Lax`;
+
+function getRpId(req) {
+  if (process.env.RP_ID && process.env.RP_ID !== 'localhost') {
+    return process.env.RP_ID;
+  }
+  const origin = getOrigin(req);
+  try {
+    const url = new URL(origin);
+    return url.hostname;
+  } catch {
+    const host = req?.headers?.['x-forwarded-host'] || req?.headers?.host || '';
+    return host.split(':')[0] || 'localhost';
+  }
+}
+
+function sessionCookie(user, req) {
+  const origin = req ? getOrigin(req) : ORIGIN;
+  const isSecure = /^https:/i.test(origin) ? ' Secure;' : '';
+  return `gymsid=${makeSession(user)}; Path=/; Max-Age=${SESSION_DAYS * 86400}; HttpOnly;${isSecure} SameSite=Lax`;
+}
+
+function clearCookie(req) {
+  const origin = req ? getOrigin(req) : ORIGIN;
+  const isSecure = /^https:/i.test(origin) ? ' Secure;' : '';
+  return `gymsid=; Path=/; Max-Age=0; HttpOnly;${isSecure} SameSite=Lax`;
+}
 
 /* ---------- challenge store (in-memory, 5 min TTL) ---------- */
 const challenges = new Map();
@@ -309,14 +342,16 @@ const routes = {
     }
 
     if (!uid) uid = crypto.randomBytes(12).toString('base64url');
+    const activeRpId = getRpId(req);
+    const activeOrigin = getOrigin(req);
     const options = await generateRegistrationOptions({
-      rpName: RP_NAME, rpID: RP_ID,
+      rpName: RP_NAME, rpID: activeRpId,
       userID: Buffer.from(uid), userName: name, userDisplayName: name,
       attestationType: 'none',
       authenticatorSelection: { residentKey: 'required', userVerification: 'preferred' },
       excludeCredentials: []
     });
-    const cid = putChallenge({ challenge: options.challenge, name, uid, code, enrollmentToken });
+    const cid = putChallenge({ challenge: options.challenge, name, uid, code, enrollmentToken, rpId: activeRpId, origin: activeOrigin });
     json(res, 200, { cid, options });
   },
 
@@ -324,13 +359,22 @@ const routes = {
     const body = await readBody(req);
     const c = takeChallenge(body.cid);
     if (!c || !c.uid) return json(res, 400, { error: 'challenge expired — try again' });
+    const activeRpId = c.rpId || getRpId(req);
+    const activeOrigin = c.origin || getOrigin(req);
+    const expectedOrigins = Array.from(new Set([
+      activeOrigin,
+      `https://${activeRpId}`,
+      `http://${activeRpId}`,
+      ORIGIN
+    ])).filter(Boolean);
+
     let verification;
     try {
       verification = await verifyRegistrationResponse({
         response: body.credential,
         expectedChallenge: c.challenge,
-        expectedOrigin: ORIGIN,
-        expectedRPID: RP_ID,
+        expectedOrigin: expectedOrigins,
+        expectedRPID: activeRpId,
         requireUserVerification: false
       });
     } catch (e) { return json(res, 400, { error: 'verification failed: ' + e.message }); }
@@ -386,14 +430,16 @@ const routes = {
       return json(res, 500, { error: 'Error al registrar credencial en base de datos' });
     }
 
-    json(res, 200, { user: { id: user.id, name: user.name, role: user.role, admin: isAdmin(user) } }, { 'Set-Cookie': sessionCookie(user) });
+    json(res, 200, { user: { id: user.id, name: user.name, role: user.role, admin: isAdmin(user) } }, { 'Set-Cookie': sessionCookie(user, req) });
   },
 
   'POST /api/login/options': async (req, res) => {
+    const activeRpId = getRpId(req);
+    const activeOrigin = getOrigin(req);
     const options = await generateAuthenticationOptions({
-      rpID: RP_ID, userVerification: 'preferred', allowCredentials: []
+      rpID: activeRpId, userVerification: 'preferred', allowCredentials: []
     });
-    const cid = putChallenge({ challenge: options.challenge });
+    const cid = putChallenge({ challenge: options.challenge, rpId: activeRpId, origin: activeOrigin });
     json(res, 200, { cid, options });
   },
 
@@ -425,13 +471,22 @@ const routes = {
       return json(res, 403, { error: 'this account has been disabled' });
     }
 
+    const activeRpId = c.rpId || getRpId(req);
+    const activeOrigin = c.origin || getOrigin(req);
+    const expectedOrigins = Array.from(new Set([
+      activeOrigin,
+      `https://${activeRpId}`,
+      `http://${activeRpId}`,
+      ORIGIN
+    ])).filter(Boolean);
+
     let verification;
     try {
       verification = await verifyAuthenticationResponse({
         response: body.credential,
         expectedChallenge: c.challenge,
-        expectedOrigin: ORIGIN,
-        expectedRPID: RP_ID,
+        expectedOrigin: expectedOrigins,
+        expectedRPID: activeRpId,
         requireUserVerification: false,
         credential: {
           id: cred.id,
@@ -458,17 +513,17 @@ const routes = {
       session_version: cred.session_version
     };
 
-    json(res, 200, { user: { id: user.id, name: user.name, role: user.role, admin: isAdmin(user) } }, { 'Set-Cookie': sessionCookie(user) });
+    json(res, 200, { user: { id: user.id, name: user.name, role: user.role, admin: isAdmin(user) } }, { 'Set-Cookie': sessionCookie(user, req) });
   },
 
-  'POST /api/logout': async (req, res) => json(res, 200, { ok: true }, { 'Set-Cookie': clearCookie }),
+  'POST /api/logout': async (req, res) => json(res, 200, { ok: true }, { 'Set-Cookie': clearCookie(req) }),
 
   'POST /api/logout/all': async (req, res) => {
     const user = await readSession(req);
     if (!user) return json(res, 401, { error: 'not signed in' });
     try {
       await query('UPDATE users SET session_version = session_version + 1 WHERE id = $1', [user.id]);
-      json(res, 200, { ok: true }, { 'Set-Cookie': clearCookie });
+      json(res, 200, { ok: true }, { 'Set-Cookie': clearCookie(req) });
     } catch (e) {
       console.error('POST /api/logout/all error:', e.message);
       json(res, 500, { error: 'Error al revocar sesiones' });
@@ -774,7 +829,7 @@ const routes = {
       `, [athleteId, name, email, caller.id, enrollmentToken, expiresAt]);
 
       const athlete = result.rows[0];
-      const enrollmentUrl = `${ORIGIN}/?enroll=${enrollmentToken}`;
+      const enrollmentUrl = `${getOrigin(req)}/?enroll=${enrollmentToken}`;
       json(res, 201, { athlete, enrollmentUrl });
     } catch (err) {
       if (err.code === '23505') return json(res, 409, { error: 'El correo electrónico ya está registrado' });
