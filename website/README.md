@@ -1,4 +1,4 @@
-# opengym.duarte-santos.ch
+# balackGym Website
 
 Source of the project website — plain hand-written HTML/CSS/JS, no build step,
 served by nginx.

@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0c0e12">
 <meta property="og:title" content="balackGym — your workouts, your weights, your data">
 <meta property="og:description" content="Free, open-source gym & body-weight tracker. Android APK or self-hosted with Docker. No account, no cloud, no telemetry.">
-<meta property="og:image" content="https://opengym.duarte-santos.ch/img/banner.png">
-<meta property="og:url" content="https://opengym.duarte-santos.ch/">
+<meta property="og:image" content="/img/banner.png">
+<meta property="og:url" content="/">
 <meta property="og:type" content="website">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="icon" type="image/png" sizes="180x180" href="icon-180.png">
@@ -28,9 +28,9 @@
  "operatingSystem":"Android, Web","applicationCategory":"HealthApplication",
  "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
  "license":"https://www.gnu.org/licenses/agpl-3.0.html",
- "url":"https://opengym.duarte-santos.ch/",
- "downloadUrl":"https://opengym.duarte-santos.ch/balackgym.apk",
- "author":{"@type":"Person","name":"Duarte Santos","url":"https://duarte-santos.ch"}}
+ "url":"/",
+ "downloadUrl":"balackgym.apk",
+ "author":{"@type":"Organization","name":"balackGym"}}
 </script>
 </head>
 <body>
@@ -46,7 +46,7 @@
     <a href="#demo" class="hide-s" data-i18n="nav_demo">Demo</a>
     <a href="docs.html" data-i18n="nav_docs">Documentación</a>
     <a href="about.html" class="hide-s" data-i18n="nav_about">Acerca de</a>
-    <a href="https://github.com/DuarteSantos8/openGym" rel="noopener"><span data-gh="stars">GitHub</span></a>
+    <a href="https://github.com/iamluissosa/openGym" rel="noopener">GitHub</a>
     <div class="lang-switch" role="group" aria-label="Cambiar idioma / Switch language">
       <button type="button" class="lang-btn active" data-lang="es" aria-pressed="true" title="Español">ES</button>
       <button type="button" class="lang-btn" data-lang="en" aria-pressed="false" title="English">EN</button>
@@ -66,7 +66,7 @@
   <div class="hero-btns">
     <a class="btn" href="#download" data-i18n="hero_get">Obtener balackGym</a>
     <a class="btn ghost" href="#demo" data-i18n="hero_try">Probar la demo en vivo</a>
-    <a class="btn ghost" href="https://github.com/DuarteSantos8/openGym" rel="noopener">GitHub <span class="ct" data-gh="stars">★</span></a>
+    <a class="btn ghost" href="https://github.com/iamluissosa/openGym" rel="noopener">GitHub</a>
   </div>
 </div></header>
 
@@ -115,9 +115,9 @@
   <p class="lead" data-i18n="demo_lead">Esta es la aplicación real con datos de ejemplo, ejecutándose en tu navegador —
      explora, inicia un entrenamiento, cambia lo que quieras.</p>
   <div class="demo-wrap">
-    <div class="phone"><iframe src="https://duartesantos8.github.io/openGym/" title="balackGym live demo" loading="lazy"></iframe></div>
+    <div class="phone"><iframe src="demo/" title="balackGym live demo" loading="lazy"></iframe></div>
   </div>
-  <p class="demo-note"><span data-i18n="demo_note">Los datos de la demo viven solo en esta pestaña del navegador y se pueden reiniciar en Ajustes. ¿Prefieres pantalla completa? </span><a href="https://duartesantos8.github.io/openGym/" rel="noopener" data-i18n="demo_fs">Abrir la demo en pantalla completa →</a></p>
+  <p class="demo-note"><span data-i18n="demo_note">Los datos de la demo viven solo en esta pestaña del navegador y se pueden reiniciar en Ajustes. ¿Prefieres pantalla completa? </span><a href="demo/" target="_blank" rel="noopener" data-i18n="demo_fs">Abrir la demo en pantalla completa →</a></p>
 </div></section>
 
 <section id="download"><div class="wrap">
@@ -162,7 +162,7 @@
     <blockquote data-i18n-html="story_quote">balackGym comenzó como <strong>una pequeña app que construí para mí</strong> — solo quería
       registrar mis entrenamientos y peso sin una app de suscripción adueñándose de mis datos de entrenamiento.
       Luego mis amigos quisieron usarla, y fue cobrando vida propia.</blockquote>
-    <p class="who" data-i18n-html="story_who">— Duarte Santos · <a href="about.html">conoce la historia completa →</a></p>
+    <p class="who" data-i18n-html="story_who">— balackGym · <a href="about.html">conoce la historia completa →</a></p>
   </div>
 </div></section>
 
@@ -170,29 +170,27 @@
   <p class="kicker" data-i18n="os_kicker">Código abierto</p>
   <h2 data-i18n="os_title">Licencia AGPL, para siempre</h2>
   <p class="lead" data-i18n="os_lead">El código es público, la licencia mantiene cada bifurcación abierta y no hay una
-     versión comercial esperando tras bambalinas. Si balackGym te resulta útil,
-     una ⭐ en GitHub ayuda a que más personas lo descubran.</p>
+     versión comercial esperando tras bambalinas.</p>
   <div class="os">
-    <div class="stat"><b data-gh="stars-n">–</b><span data-i18n="os_stars">estrellas en GitHub</span></div>
     <div class="stat"><b data-gh="forks-n">–</b><span data-i18n="os_forks">bifurcaciones</span></div>
     <div class="stat"><b data-gh="issues-n">–</b><span data-i18n="os_issues">issues abiertas</span></div>
     <div class="stat"><b>1,324</b><span data-i18n="os_ex">ejercicios</span></div>
     <div class="stat"><b>12</b><span data-i18n="os_langs">idiomas</span></div>
   </div>
   <div class="hero-btns" style="justify-content:flex-start;margin-top:24px">
-    <a class="btn ghost" href="https://github.com/DuarteSantos8/openGym" rel="noopener" data-i18n="os_repo">balackGym en GitHub</a>
-    <a class="btn ghost" href="https://github.com/DuarteSantos8/openGym/blob/main/CONTRIBUTING.md" rel="noopener" data-i18n="os_contrib">Contribuir</a>
-    <a class="btn ghost" href="https://github.com/DuarteSantos8/openGym/blob/main/CHANGELOG.md" rel="noopener" data-i18n="os_changelog">Historial de cambios</a>
+    <a class="btn ghost" href="https://github.com/iamluissosa/openGym" rel="noopener" data-i18n="os_repo">balackGym en GitHub</a>
+    <a class="btn ghost" href="https://github.com/iamluissosa/openGym/blob/main/CONTRIBUTING.md" rel="noopener" data-i18n="os_contrib">Contribuir</a>
+    <a class="btn ghost" href="https://github.com/iamluissosa/openGym/blob/main/CHANGELOG.md" rel="noopener" data-i18n="os_changelog">Historial de cambios</a>
   </div>
 </div></section>
 
 <footer><div class="wrap foot">
-  <span data-i18n-html="foot_copy">balackGym · AGPL-3.0 · © 2026 <a href="https://duarte-santos.ch" rel="noopener">Duarte Santos</a></span>
+  <span data-i18n-html="foot_copy">balackGym · AGPL-3.0 · © 2026 balackGym</span>
   <div class="links">
     <a href="docs.html" data-i18n="nav_docs">Documentación</a>
     <a href="about.html" class="hide-s" data-i18n="nav_about">Acerca de</a>
-    <a href="https://github.com/DuarteSantos8/openGym" rel="noopener">GitHub</a>
-    <a href="https://duartesantos8.github.io/openGym/" rel="noopener" data-i18n="foot_demo">Demo en vivo</a>
+    <a href="https://github.com/iamluissosa/openGym" rel="noopener">GitHub</a>
+    <a href="demo/" rel="noopener" data-i18n="foot_demo">Demo en vivo</a>
   </div>
 </div></footer>
 

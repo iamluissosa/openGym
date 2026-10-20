@@ -624,7 +624,7 @@ export default function Settings() {
         balackGym · {t("free & open source (AGPL v3)")}
         <br />
         <a
-          href="https://github.com/DuarteSantos8/openGym"
+          href="https://github.com/iamluissosa/openGym"
           target="_blank"
           rel="noopener"
         >

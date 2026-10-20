@@ -108,13 +108,12 @@ const I18N = {
     // Story
     story_kicker: "¿Por qué existe balackGym?",
     story_quote: "balackGym comenzó como <strong>una pequeña app que construí para mí</strong> — solo quería registrar mis entrenamientos y peso sin una app de suscripción adueñándose de mis datos de entrenamiento. Luego mis amigos quisieron usarla, y fue cobrando vida propia.",
-    story_who: "— Duarte Santos · <a href=\"about.html\">conoce la historia completa →</a>",
+    story_who: "— balackGym · <a href=\"about.html\">conoce la historia completa →</a>",
 
     // Open Source
     os_kicker: "Código abierto",
     os_title: "Licencia AGPL, para siempre",
-    os_lead: "El código es público, la licencia mantiene cada bifurcación abierta y no hay una versión comercial esperando tras bambalinas. Si balackGym te resulta útil, una ⭐ en GitHub ayuda a que más personas lo descubran.",
-    os_stars: "estrellas en GitHub",
+    os_lead: "El código es público, la licencia mantiene cada bifurcación abierta y no hay una versión comercial esperando tras bambalinas.",
     os_forks: "bifurcaciones",
     os_issues: "issues abiertas",
     os_ex: "ejercicios",
@@ -124,7 +123,7 @@ const I18N = {
     os_changelog: "Historial de cambios",
 
     // Footer
-    foot_copy: "balackGym · AGPL-3.0 · © 2026 <a href=\"https://duarte-santos.ch\" rel=\"noopener\">Duarte Santos</a>",
+    foot_copy: "balackGym · AGPL-3.0 · © 2026 balackGym",
     foot_demo: "Demo en vivo",
 
     // About Page
@@ -145,12 +144,12 @@ const I18N = {
     about_pr3: "<b>Mínimas dependencias.</b> El backend es un único archivo Node con una sola dependencia; el frontend es React, un router y un almacén de estado. Lo bastante conciso como para ser auditado.",
     about_pr4: "<b>Código abierto que sigue abierto.</b> AGPL-3.0, de modo que cada bifurcación y versión alojada debe compartir su código con la comunidad.",
     about_get: "Obtener balackGym",
-    about_star: "Danos una estrella en GitHub",
+    about_repo: "balackGym en GitHub",
     notes_link: "notas →",
 
     // Docs Page
     docs_h1: "Documentación",
-    docs_lead: "Todo lo necesario para poner en marcha balackGym — en tu teléfono o en tu servidor. La documentación técnica avanzada se encuentra <a href=\"https://github.com/DuarteSantos8/openGym/tree/main/docs\" rel=\"noopener\">en el repositorio</a>.",
+    docs_lead: "Todo lo necesario para poner en marcha balackGym — en tu teléfono o en tu servidor. La documentación técnica avanzada se encuentra <a href=\"https://github.com/iamluissosa/openGym/tree/main/docs\" rel=\"noopener\">en el repositorio</a>.",
     docs_toc_android: "Android",
     docs_toc_iphone: "iPhone",
     docs_toc_selfhost: "Autoalojamiento",
@@ -167,12 +166,12 @@ const I18N = {
     docs_iphone_h2: "Uso en iPhone",
     docs_iphone_p1: "Apple no permite la instalación de apps fuera de la App Store, por lo que no existe una descarga directa para iOS — es una limitación de la plataforma, no una decisión nuestra. Las alternativas que funcionan:",
     docs_iphone_li1: "<b>Autoalojamiento + pantalla de inicio (recomendado):</b> abre tu propia instancia de balackGym en Safari → <b>Compartir</b> → <b>Añadir a pantalla de inicio</b>. Obtendrás una experiencia a pantalla completa con icono propio, inicio por passkey y sincronización — sin fecha de caducidad ni cuotas.",
-    docs_iphone_li2: "<b>Compilarlo en tu propio iPhone:</b> con un Mac y Xcode, la app nativa se ejecuta en tu dispositivo con una cuenta gratuita de Apple ID (Apple revoca la firma a los 7 días; se vuelve a compilar desde Xcode para renovarla). Consulta <a href=\"https://github.com/DuarteSantos8/openGym/blob/main/docs/MOBILE.md\" rel=\"noopener\">docs/MOBILE.md</a>.",
-    docs_iphone_li3: "<b>¿Solo quieres probar?</b> La <a href=\"https://duartesantos8.github.io/openGym/\" rel=\"noopener\">demo en vivo</a> funciona en cualquier navegador con datos de ejemplo.",
+    docs_iphone_li2: "<b>Compilarlo en tu propio iPhone:</b> con un Mac y Xcode, la app nativa se ejecuta en tu dispositivo con una cuenta gratuita de Apple ID (Apple revoca la firma a los 7 días; se vuelve a compilar desde Xcode para renovarla). Consulta <a href=\"https://github.com/iamluissosa/openGym/blob/main/docs/MOBILE.md\" rel=\"noopener\">docs/MOBILE.md</a>.",
+    docs_iphone_li3: "<b>¿Solo quieres probar?</b> La <a href=\"https://iamluissosa.github.io/openGym/\" rel=\"noopener\">demo en vivo</a> funciona en cualquier navegador con datos de ejemplo.",
     docs_selfhost_h2: "Autoalojar con Docker",
     docs_selfhost_p1: "La modalidad autoalojada añade perfiles con passkey, sincronización en todos tus dispositivos y (opcionalmente) un panel de administración. Solo necesitas <a href=\"https://docs.docker.com/get-docker/\" rel=\"noopener\">Docker</a> con Compose:",
     docs_selfhost_p2: "Abre <code>http://localhost:8080</code>, pulsa en <b>Crear perfil</b> y listo. El primer inicio descarga los recursos multimedia de ejercicios (~140&nbsp;MB) una sola vez.",
-    docs_selfhost_note: "¿Deseas acceder desde tu móvil con passkeys? Necesitarás un dominio con HTTPS — un cambio de dos líneas en <code>.env</code>. La guía completa, incluidos ejemplos de proxy inverso y opciones de registro por invitación o administrador, está en <a href=\"https://github.com/DuarteSantos8/openGym/blob/main/docs/SELF_HOSTING.md\" rel=\"noopener\">docs/SELF_HOSTING.md</a>.",
+    docs_selfhost_note: "¿Deseas acceder desde tu móvil con passkeys? Necesitarás un dominio con HTTPS — un cambio de dos líneas en <code>.env</code>. La guía completa, incluidos ejemplos de proxy inverso y opciones de registro por invitación o administrador, está en <a href=\"https://github.com/iamluissosa/openGym/blob/main/docs/SELF_HOSTING.md\" rel=\"noopener\">docs/SELF_HOSTING.md</a>.",
     docs_import_h2: "Importar historial de entrenamiento",
     docs_import_p1: "¿Vienes de otra aplicación? <b>Ajustes → Datos → Importar de otra app</b> es compatible con:",
     docs_import_li1: "<b>FitNotes</b> (tanto exportaciones de Android como FitNotes 2 para iOS)",
@@ -185,7 +184,7 @@ const I18N = {
     docs_build_h2: "Compilar tú mismo",
     docs_build_p: "Todo en esta web se compila desde el repositorio público:",
     docs_build_li1: "<b>Web / autoalojado:</b> <code>docker compose up -d --build</code> construye el frontend dentro del contenedor — no requieres Node en local.",
-    docs_build_li2: "<b>APK Android / app iOS:</b> los proyectos Capacitor se encuentran en <code>frontend/android</code> y <code>frontend/ios</code> — notas de compilación, firma y distribución en <a href=\"https://github.com/DuarteSantos8/openGym/blob/main/docs/MOBILE.md\" rel=\"noopener\">docs/MOBILE.md</a>.",
+    docs_build_li2: "<b>APK Android / app iOS:</b> los proyectos Capacitor se encuentran en <code>frontend/android</code> y <code>frontend/ios</code> — notas de compilación, firma y distribución en <a href=\"https://github.com/iamluissosa/openGym/blob/main/docs/MOBILE.md\" rel=\"noopener\">docs/MOBILE.md</a>.",
     docs_faq_h2: "Preguntas frecuentes",
     docs_faq_q1: "¿Es realmente gratis?",
     docs_faq_a1: "Sí — gratis tanto en coste como en libertad (AGPL-3.0). Sin versión 'pro', sin funciones bloqueadas, sin publicidad, y la licencia asegura que cada derivado se mantenga abierto.",
@@ -304,13 +303,12 @@ const I18N = {
     // Story
     story_kicker: "Why balackGym exists",
     story_quote: "balackGym started as <strong>a tiny app I built for myself</strong> — I just wanted to log my workouts and weight without a subscription app claiming my training data. Then friends wanted in, then it grew a mind of its own.",
-    story_who: "— Duarte Santos · <a href=\"about.html\">read the whole story →</a>",
+    story_who: "— balackGym · <a href=\"about.html\">read the whole story →</a>",
 
     // Open Source
     os_kicker: "Open source",
     os_title: "AGPL-licensed, forever",
-    os_lead: "The code is public, the license keeps every fork open, and there is no commercial version waiting behind a curtain. If balackGym is useful to you, a ⭐ on GitHub helps more people find it.",
-    os_stars: "GitHub stars",
+    os_lead: "The code is public, the license keeps every fork open, and there is no commercial version waiting behind a curtain.",
     os_forks: "forks",
     os_issues: "open issues",
     os_ex: "exercises",
@@ -320,7 +318,7 @@ const I18N = {
     os_changelog: "Changelog",
 
     // Footer
-    foot_copy: "balackGym · AGPL-3.0 · © 2026 <a href=\"https://duarte-santos.ch\" rel=\"noopener\">Duarte Santos</a>",
+    foot_copy: "balackGym · AGPL-3.0 · © 2026 balackGym",
     foot_demo: "Live demo",
 
     // About Page
@@ -341,12 +339,12 @@ const I18N = {
     about_pr3: "<b>Dependency-light.</b> The backend is one Node file with a single dependency; the frontend is React, a router and a store. Small enough to actually audit.",
     about_pr4: "<b>Open source that stays open.</b> AGPL-3.0, so every fork and every hosted version owes its code back to everyone.",
     about_get: "Get balackGym",
-    about_star: "Star it on GitHub",
+    about_repo: "balackGym on GitHub",
     notes_link: "notes →",
 
     // Docs Page
     docs_h1: "Docs",
-    docs_lead: "Everything you need to get balackGym running — on a phone, or on your own server. The deeper, maintainer-level docs live <a href=\"https://github.com/DuarteSantos8/openGym/tree/main/docs\" rel=\"noopener\">in the repository</a>.",
+    docs_lead: "Everything you need to get balackGym running — on a phone, or on your own server. The deeper, maintainer-level docs live <a href=\"https://github.com/iamluissosa/openGym/tree/main/docs\" rel=\"noopener\">in the repository</a>.",
     docs_toc_android: "Android",
     docs_toc_iphone: "iPhone",
     docs_toc_selfhost: "Self-hosting",
@@ -363,12 +361,12 @@ const I18N = {
     docs_iphone_h2: "Use on iPhone",
     docs_iphone_p1: "Apple does not allow installing apps outside the App Store, so there is no iOS download — that's a platform rule, not a choice we made. What works instead:",
     docs_iphone_li1: "<b>Self-host + home screen (recommended):</b> open your own balackGym instance in Safari → <b>Share</b> → <b>Add to Home Screen</b>. You get a full-screen app with its own icon, passkey sign-in and sync — no expiry, no fees.",
-    docs_iphone_li2: "<b>Build it onto your own iPhone:</b> with a Mac and Xcode, the native app runs on your device with a free Apple ID (Apple expires the signature after 7 days; re-run from Xcode to renew). See <a href=\"https://github.com/DuarteSantos8/openGym/blob/main/docs/MOBILE.md\" rel=\"noopener\">docs/MOBILE.md</a>.",
-    docs_iphone_li3: "<b>Just looking?</b> The <a href=\"https://duartesantos8.github.io/openGym/\" rel=\"noopener\">live demo</a> runs in any browser with example data.",
+    docs_iphone_li2: "<b>Build it onto your own iPhone:</b> with a Mac and Xcode, the native app runs on your device with a free Apple ID (Apple expires the signature after 7 days; re-run from Xcode to renew). See <a href=\"https://github.com/iamluissosa/openGym/blob/main/docs/MOBILE.md\" rel=\"noopener\">docs/MOBILE.md</a>.",
+    docs_iphone_li3: "<b>Just looking?</b> The <a href=\"https://iamluissosa.github.io/openGym/\" rel=\"noopener\">live demo</a> runs in any browser with example data.",
     docs_selfhost_h2: "Self-host with Docker",
     docs_selfhost_p1: "The self-hosted flavor adds passkey profiles, sync across devices, and (optionally) an admin dashboard. You need <a href=\"https://docs.docker.com/get-docker/\" rel=\"noopener\">Docker</a> with Compose:",
     docs_selfhost_p2: "Open <code>http://localhost:8080</code>, tap <b>Create profile</b>, and you're in. The first launch downloads the exercise media (~140&nbsp;MB) once.",
-    docs_selfhost_note: "Want it reachable from your phone with passkeys? You'll need an HTTPS domain — a two-line change in <code>.env</code>. The full guide, including reverse-proxy examples and the invite-only/admin options, is in <a href=\"https://github.com/DuarteSantos8/openGym/blob/main/docs/SELF_HOSTING.md\" rel=\"noopener\">docs/SELF_HOSTING.md</a>.",
+    docs_selfhost_note: "Want it reachable from your phone with passkeys? You'll need an HTTPS domain — a two-line change in <code>.env</code>. The full guide, including reverse-proxy examples and the invite-only/admin options, is in <a href=\"https://github.com/iamluissosa/openGym/blob/main/docs/SELF_HOSTING.md\" rel=\"noopener\">docs/SELF_HOSTING.md</a>.",
     docs_import_h2: "Import your training history",
     docs_import_p1: "Coming from another tracker? <b>Settings → Data → Import from another app</b> reads:",
     docs_import_li1: "<b>FitNotes</b> (both the Android and the FitNotes 2 iOS export)",
@@ -381,7 +379,7 @@ const I18N = {
     docs_build_h2: "Build it yourself",
     docs_build_p: "Everything on this page is built from the public repo:",
     docs_build_li1: "<b>Web / self-host:</b> <code>docker compose up -d --build</code> builds the frontend inside the container — no local Node needed.",
-    docs_build_li2: "<b>Android APK / iOS app:</b> the Capacitor projects live in <code>frontend/android</code> and <code>frontend/ios</code> — build, signing and distribution notes are in <a href=\"https://github.com/DuarteSantos8/openGym/blob/main/docs/MOBILE.md\" rel=\"noopener\">docs/MOBILE.md</a>.",
+    docs_build_li2: "<b>Android APK / iOS app:</b> the Capacitor projects live in <code>frontend/android</code> and <code>frontend/ios</code> — build, signing and distribution notes are in <a href=\"https://github.com/iamluissosa/openGym/blob/main/docs/MOBILE.md\" rel=\"noopener\">docs/MOBILE.md</a>.",
     docs_faq_h2: "FAQ",
     docs_faq_q1: "Is it really free?",
     docs_faq_a1: "Yes — free as in cost <i>and</i> as in freedom (AGPL-3.0). No pro tier, no locked features, no ads, and the license keeps every fork open source too.",
@@ -492,17 +490,14 @@ if (document.readyState === 'loading') {
     const cached = sessionStorage.getItem('gh_repo');
     if (cached) d = JSON.parse(cached);
     else {
-      const r = await fetch('https://api.github.com/repos/DuarteSantos8/openGym');
+      const r = await fetch('https://api.github.com/repos/iamluissosa/openGym');
       if (!r.ok) return;
       d = await r.json();
       sessionStorage.setItem('gh_repo', JSON.stringify({
-        stargazers_count: d.stargazers_count,
         forks_count: d.forks_count,
         open_issues_count: d.open_issues_count
       }));
     }
-    set('stars', '★ ' + d.stargazers_count);
-    set('stars-n', d.stargazers_count);
     set('forks-n', d.forks_count);
     set('issues-n', d.open_issues_count);
   } catch (e) { /* offline / rate-limited */ }
@@ -555,7 +550,7 @@ if (document.readyState === 'loading') {
     const cached = sessionStorage.getItem('gh_releases');
     if (cached) cachedReleases = JSON.parse(cached);
     else {
-      const r = await fetch('https://api.github.com/repos/DuarteSantos8/openGym/releases?per_page=100');
+      const r = await fetch('https://api.github.com/repos/iamluissosa/openGym/releases?per_page=100');
       if (r.ok) {
         cachedReleases = (await r.json())
           .filter(x => !x.draft && !x.prerelease)

@@ -32,7 +32,7 @@
     <a href="/#demo" class="hide-s" data-i18n="nav_demo">Demo</a>
     <a href="docs.html" data-i18n="nav_docs">Documentación</a>
     <a href="about.html" class="hide-s" data-i18n="nav_about">Acerca de</a>
-    <a href="https://github.com/DuarteSantos8/openGym" rel="noopener"><span data-gh="stars">GitHub</span></a>
+    <a href="https://github.com/iamluissosa/openGym" rel="noopener">GitHub</a>
     <div class="lang-switch" role="group" aria-label="Cambiar idioma / Switch language">
       <button type="button" class="lang-btn active" data-lang="es" aria-pressed="true" title="Español">ES</button>
       <button type="button" class="lang-btn" data-lang="en" aria-pressed="false" title="English">EN</button>
@@ -43,7 +43,7 @@
 
 <main class="wrap prose">
   <h1 data-i18n="docs_h1">Documentación</h1>
-  <p class="lead" data-i18n-html="docs_lead">Todo lo necesario para poner en marcha balackGym — en tu teléfono o en tu servidor. La documentación técnica avanzada se encuentra <a href="https://github.com/DuarteSantos8/openGym/tree/main/docs" rel="noopener">en el repositorio</a>.</p>
+  <p class="lead" data-i18n-html="docs_lead">Todo lo necesario para poner en marcha balackGym — en tu teléfono o en tu servidor. La documentación técnica avanzada se encuentra <a href="https://github.com/iamluissosa/openGym/tree/main/docs" rel="noopener">en el repositorio</a>.</p>
 
   <div class="toc">
     <a href="#android" data-i18n="docs_toc_android">Android</a>
@@ -68,19 +68,19 @@
   <p data-i18n="docs_iphone_p1">Apple no permite la instalación de apps fuera de la App Store, por lo que no existe una descarga directa para iOS — es una limitación de la plataforma, no una decisión nuestra. Las alternativas que funcionan:</p>
   <ul>
     <li data-i18n-html="docs_iphone_li1"><b>Autoalojamiento + pantalla de inicio (recomendado):</b> abre tu propia instancia de balackGym en Safari → <b>Compartir</b> → <b>Añadir a pantalla de inicio</b>. Obtendrás una experiencia a pantalla completa con icono propio, inicio por passkey y sincronización — sin fecha de caducidad ni cuotas.</li>
-    <li data-i18n-html="docs_iphone_li2"><b>Compilarlo en tu propio iPhone:</b> con un Mac y Xcode, la app nativa se ejecuta en tu dispositivo con una cuenta gratuita de Apple ID (Apple revoca la firma a los 7 días; se vuelve a compilar desde Xcode para renovarla). Consulta <a href="https://github.com/DuarteSantos8/openGym/blob/main/docs/MOBILE.md" rel="noopener">docs/MOBILE.md</a>.</li>
-    <li data-i18n-html="docs_iphone_li3"><b>¿Solo quieres probar?</b> La <a href="https://duartesantos8.github.io/openGym/" rel="noopener">demo en vivo</a> funciona en cualquier navegador con datos de ejemplo.</li>
+    <li data-i18n-html="docs_iphone_li2"><b>Compilarlo en tu propio iPhone:</b> con un Mac y Xcode, la app nativa se ejecuta en tu dispositivo con una cuenta gratuita de Apple ID (Apple revoca la firma a los 7 días; se vuelve a compilar desde Xcode para renovarla). Consulta <a href="https://github.com/iamluissosa/openGym/blob/main/docs/MOBILE.md" rel="noopener">docs/MOBILE.md</a>.</li>
+    <li data-i18n-html="docs_iphone_li3"><b>¿Solo quieres probar?</b> La <a href="demo/" rel="noopener">demo en vivo</a> funciona en cualquier navegador con datos de ejemplo.</li>
   </ul>
 
   <h2 id="selfhost" data-i18n="docs_selfhost_h2">Autoalojar con Docker</h2>
   <p data-i18n-html="docs_selfhost_p1">La modalidad autoalojada añade perfiles con passkey, sincronización en todos tus dispositivos y (opcionalmente) un panel de administración. Solo necesitas <a href="https://docs.docker.com/get-docker/" rel="noopener">Docker</a> con Compose:</p>
-  <pre><code>git clone https://github.com/DuarteSantos8/openGym
+  <pre><code>git clone https://github.com/iamluissosa/openGym
 cd openGym
 cp .env.example .env
 docker compose pull    # prebuilt images (amd64 + arm64) — skip to build from source
 docker compose up -d</code></pre>
   <p data-i18n-html="docs_selfhost_p2">Abre <code>http://localhost:8080</code>, pulsa en <b>Crear perfil</b> y listo. El primer inicio descarga los recursos multimedia de ejercicios (~140&nbsp;MB) una sola vez.</p>
-  <div class="note" data-i18n-html="docs_selfhost_note">¿Deseas acceder desde tu móvil con passkeys? Necesitarás un dominio con HTTPS — un cambio de dos líneas en <code>.env</code>. La guía completa, incluidos ejemplos de proxy inverso y opciones de registro por invitación o administrador, está en <a href="https://github.com/DuarteSantos8/openGym/blob/main/docs/SELF_HOSTING.md" rel="noopener">docs/SELF_HOSTING.md</a>.</div>
+  <div class="note" data-i18n-html="docs_selfhost_note">¿Deseas acceder desde tu móvil con passkeys? Necesitarás un dominio con HTTPS — un cambio de dos líneas en <code>.env</code>. La guía completa, incluidos ejemplos de proxy inverso y opciones de registro por invitación o administrador, está en <a href="https://github.com/iamluissosa/openGym/blob/main/docs/SELF_HOSTING.md" rel="noopener">docs/SELF_HOSTING.md</a>.</div>
 
   <h2 id="import" data-i18n="docs_import_h2">Importar historial de entrenamiento</h2>
   <p data-i18n-html="docs_import_p1">¿Vienes de otra aplicación? <b>Ajustes → Datos → Importar de otra app</b> es compatible con:</p>
@@ -99,7 +99,7 @@ docker compose up -d</code></pre>
   <p data-i18n="docs_build_p">Todo en esta web se compila desde el repositorio público:</p>
   <ul>
     <li data-i18n-html="docs_build_li1"><b>Web / autoalojado:</b> <code>docker compose up -d --build</code> construye el frontend dentro del contenedor — no requieres Node en local.</li>
-    <li data-i18n-html="docs_build_li2"><b>APK Android / app iOS:</b> los proyectos Capacitor se encuentran en <code>frontend/android</code> y <code>frontend/ios</code> — notas de compilación, firma y distribución en <a href="https://github.com/DuarteSantos8/openGym/blob/main/docs/MOBILE.md" rel="noopener">docs/MOBILE.md</a>.</li>
+    <li data-i18n-html="docs_build_li2"><b>APK Android / app iOS:</b> los proyectos Capacitor se encuentran en <code>frontend/android</code> y <code>frontend/ios</code> — notas de compilación, firma y distribución en <a href="https://github.com/iamluissosa/openGym/blob/main/docs/MOBILE.md" rel="noopener">docs/MOBILE.md</a>.</li>
   </ul>
 
   <h2 id="faq" data-i18n="docs_faq_h2">Preguntas frecuentes</h2>
@@ -116,12 +116,12 @@ docker compose up -d</code></pre>
 </main>
 
 <footer><div class="wrap foot">
-  <span data-i18n-html="foot_copy">balackGym · AGPL-3.0 · © 2026 <a href="https://duarte-santos.ch" rel="noopener">Duarte Santos</a></span>
+  <span data-i18n-html="foot_copy">balackGym · AGPL-3.0 · © 2026 balackGym</span>
   <div class="links">
     <a href="docs.html" data-i18n="nav_docs">Documentación</a>
     <a href="about.html" class="hide-s" data-i18n="nav_about">Acerca de</a>
-    <a href="https://github.com/DuarteSantos8/openGym" rel="noopener">GitHub</a>
-    <a href="https://duartesantos8.github.io/openGym/" rel="noopener" data-i18n="foot_demo">Demo en vivo</a>
+    <a href="https://github.com/iamluissosa/openGym" rel="noopener">GitHub</a>
+    <a href="demo/" rel="noopener" data-i18n="foot_demo">Demo en vivo</a>
   </div>
 </div></footer>
 
