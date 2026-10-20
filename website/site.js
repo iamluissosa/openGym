@@ -101,17 +101,6 @@ const I18N = {
     story_quote: "balackGym comenzó como <strong>una pequeña app que construí para mí</strong> — solo quería registrar mis entrenamientos y peso sin una app de suscripción adueñándose de mis datos de entrenamiento. Luego mis amigos quisieron usarla, y fue cobrando vida propia.",
     story_who: "— balackGym · <a href=\"about.html\">conoce la historia completa →</a>",
 
-    // Open Source
-    os_kicker: "Código abierto",
-    os_title: "Licencia AGPL, para siempre",
-    os_lead: "El código es público, la licencia mantiene cada bifurcación abierta y no hay una versión comercial esperando tras bambalinas.",
-    os_forks: "bifurcaciones",
-    os_issues: "issues abiertas",
-    os_ex: "ejercicios",
-    os_langs: "idiomas",
-    os_repo: "balackGym en GitHub",
-    os_contrib: "Contribuir",
-    os_changelog: "Historial de cambios",
 
     // Footer
     foot_copy: "balackGym · AGPL-3.0 · © 2026 balackGym",
@@ -291,17 +280,6 @@ const I18N = {
     story_quote: "balackGym started as <strong>a tiny app I built for myself</strong> — I just wanted to log my workouts and weight without a subscription app claiming my training data. Then friends wanted in, then it grew a mind of its own.",
     story_who: "— balackGym · <a href=\"about.html\">read the whole story →</a>",
 
-    // Open Source
-    os_kicker: "Open source",
-    os_title: "AGPL-licensed, forever",
-    os_lead: "The code is public, the license keeps every fork open, and there is no commercial version waiting behind a curtain.",
-    os_forks: "forks",
-    os_issues: "open issues",
-    os_ex: "exercises",
-    os_langs: "languages",
-    os_repo: "balackGym on GitHub",
-    os_contrib: "Contributing",
-    os_changelog: "Changelog",
 
     // Footer
     foot_copy: "balackGym · AGPL-3.0 · © 2026 balackGym",
@@ -472,26 +450,6 @@ if (document.readyState === 'loading') {
   initI18n();
 }
 
-// Live GitHub numbers in the nav + open-source strip.
-(async () => {
-  const set = (id, v) => document.querySelectorAll('[data-gh="' + id + '"]').forEach(el => { el.textContent = v });
-  try {
-    let d = null;
-    const cached = sessionStorage.getItem('gh_repo');
-    if (cached) d = JSON.parse(cached);
-    else {
-      const r = await fetch('https://api.github.com/repos/iamluissosa/openGym');
-      if (!r.ok) return;
-      d = await r.json();
-      sessionStorage.setItem('gh_repo', JSON.stringify({
-        forks_count: d.forks_count,
-        open_issues_count: d.open_issues_count
-      }));
-    }
-    set('forks-n', d.forks_count);
-    set('issues-n', d.open_issues_count);
-  } catch (e) { /* offline / rate-limited */ }
-})();
 
 // About page: build the milestones timeline from GitHub releases
 ;(async () => {
