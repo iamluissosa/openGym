@@ -113,7 +113,7 @@ h2 { font-size: clamp(26px, 4.5vw, 34px); letter-spacing: -.02em; margin: 6px 0 
 .phone {
   position: relative;
   width: 384px; max-width: 92vw; height: min(740px, 80vh); border-radius: 46px;
-  border: 12px solid #14171d; overflow: hidden; background: #000;
+  border: 12px solid #14171d; overflow: hidden; background: #0c0e12;
   box-shadow: 0 34px 90px rgba(0, 0, 0, .65), 0 0 0 1px rgba(255, 255, 255, .07), inset 0 0 0 1px rgba(255, 255, 255, .05);
 }
 .phone::before {
@@ -130,7 +130,14 @@ h2 { font-size: clamp(26px, 4.5vw, 34px); letter-spacing: -.02em; margin: 6px 0 
   pointer-events: none;
   box-shadow: inset 0 0 2px rgba(255, 255, 255, .08);
 }
-.phone iframe { width: 100%; height: 100%; border: 0; display: block; }
+.phone iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: #0c0e12;
+  color-scheme: dark;
+}
 .demo-note { text-align: center; color: var(--faint); font-size: 13.5px; margin-top: 14px; }
 
 /* ---------- flavors ---------- */
