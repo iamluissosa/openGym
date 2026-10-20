@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Documentación — balackGym</title>
-<meta name="description" content="Cómo instalar balackGym en Android, usarlo en iPhone, autoalojarlo con Docker, importar tu historial y hacer respaldos.">
+<title>Documentación — balackGym en Android e iOS</title>
+<meta name="description" content="Guía completa de instalación y uso de balackGym en Android e iOS. Sideloading del APK, instalación en iPhone sin tiendas, importación de historial y respaldos.">
 <meta name="theme-color" content="#0c0e12">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="icon" type="image/png" sizes="180x180" href="icon-180.png">
@@ -42,77 +42,86 @@
 </div></nav>
 
 <main class="wrap prose">
-  <h1 data-i18n="docs_h1">Documentación</h1>
-  <p class="lead" data-i18n-html="docs_lead">Todo lo necesario para poner en marcha balackGym — en tu teléfono o en tu servidor. La documentación técnica avanzada se encuentra <a href="https://github.com/iamluissosa/openGym/tree/main/docs" rel="noopener">en el repositorio</a>.</p>
+  <h1 data-i18n="docs_h1">Guía Móvil: Android e iOS</h1>
+  <p class="lead" data-i18n-html="docs_lead">Todo lo que necesitas para instalar, usar y aprovechar balackGym en tu teléfono móvil. Sin cuentas, sin nube, con privacidad total y tus datos 100% bajo tu control.</p>
 
   <div class="toc">
     <a href="#android" data-i18n="docs_toc_android">Android</a>
-    <a href="#iphone" data-i18n="docs_toc_iphone">iPhone</a>
-    <a href="#selfhost" data-i18n="docs_toc_selfhost">Autoalojamiento</a>
+    <a href="#ios" data-i18n="docs_toc_ios">iPhone (iOS)</a>
+    <a href="#features-mobile" data-i18n="docs_toc_features">Funciones móviles</a>
     <a href="#import" data-i18n="docs_toc_import">Importar historial</a>
     <a href="#backup" data-i18n="docs_toc_backup">Copias de seguridad</a>
-    <a href="#build" data-i18n="docs_toc_build">Compilar tú mismo</a>
     <a href="#faq" data-i18n="docs_toc_faq">Preguntas frecuentes</a>
   </div>
 
-  <h2 id="android" data-i18n="docs_android_h2">Instalar en Android</h2>
+  <h2 id="android" data-i18n="docs_android_h2">Instalación y uso en Android</h2>
+  <p data-i18n="docs_android_intro">balackGym para Android es una aplicación ligera (4.3 MB), rápida y autónoma. No depende de servidores ni de Google Play Services, funcionando íntegramente de manera local.</p>
   <ol>
-    <li data-i18n-html="docs_android_step1">Abre <a href="/#download">la sección de descargas</a> en tu teléfono y toca <b>Descargar para Android</b>.</li>
-    <li data-i18n-html="docs_android_step2">Tu navegador te preguntará si autorizas instalar apps — acéptalo. Es el procedimiento estándar para cualquier app fuera de Play Store (denominado <i>sideloading</i>), y puedes revocar el permiso inmediatamente después.</li>
-    <li data-i18n-html="docs_android_step3">Abre el archivo <code>balackgym.apk</code> descargado, confirma y listo. Sin cuenta, sin registros.</li>
+    <li data-i18n-html="docs_android_step1">Abre <a href="/#download">la sección de descargas</a> desde tu navegador en Android y pulsa en <b>Descargar para Android</b> para obtener el archivo <code>balackgym.apk</code>.</li>
+    <li data-i18n-html="docs_android_step2">Cuando el navegador te solicite permiso para instalar aplicaciones desconocidas, pulsa en <b>Ajustes</b> y activa <b>Autorizar descargas de esta fuente</b>. Este es el procedimiento normal de seguridad en Android para apps fuera de Play Store (denominado <i>sideloading</i>).</li>
+    <li data-i18n-html="docs_android_step3">Abre la descarga, presiona <b>Instalar</b> y listo. La app queda lista en tu cajón de aplicaciones con el icono oficial.</li>
   </ol>
-  <div class="note" data-i18n-html="docs_android_note">balackGym deliberadamente <b>no está</b> en Play Store — sin intermediarios entre tú y una app de código abierto. El APK está firmado; las actualizaciones se instalan sobre la versión previa conservando todos tus datos.</div>
-  <p data-i18n="docs_android_p">Todo se almacena en el propio teléfono. Lo único que se descarga de internet son las imágenes y animaciones de ejercicios (desde un CDN, bajo demanda).</p>
+  <div class="note" data-i18n-html="docs_android_note"><b>Actualizaciones sin pérdida de datos:</b> El APK oficial está firmado digitalmente. Cuando descargues una nueva versión de balackGym, instálala directamente sobre la actual: el sistema preservará todos tus entrenamientos, pesos y rutinas intactos.</div>
+  <p data-i18n="docs_android_storage">Todos tus registros se guardan en el almacenamiento privado del teléfono en formato JSON. Ningún dato sale de tu dispositivo.</p>
 
-  <h2 id="iphone" data-i18n="docs_iphone_h2">Uso en iPhone</h2>
-  <p data-i18n="docs_iphone_p1">Apple no permite la instalación de apps fuera de la App Store, por lo que no existe una descarga directa para iOS — es una limitación de la plataforma, no una decisión nuestra. Las alternativas que funcionan:</p>
+  <h2 id="ios" data-i18n="docs_ios_h2"><span id="iphone"></span>Uso en iPhone (iOS)</h2>
+  <p data-i18n="docs_ios_intro">Debido a que Apple restringe la instalación libre de archivos fuera de su tienda oficial, balackGym ofrece dos alternativas excelentes para disfrutar de la experiencia móvil en iOS:</p>
+  
+  <h3 data-i18n="docs_ios_pwa_h3">Método 1: Instalación inmediata como Web App (Recomendado)</h3>
+  <p data-i18n="docs_ios_pwa_desc">Safari en iOS permite instalar balackGym directamente en tu pantalla de inicio como una aplicación web progresiva independiente, sin vencimientos ni certificados:</p>
+  <ol>
+    <li data-i18n-html="docs_ios_pwa_s1">Abre el sitio web o la <a href="demo/index.html">demo en vivo</a> en <b>Safari</b> desde tu iPhone.</li>
+    <li data-i18n-html="docs_ios_pwa_s2">Toca el botón <b>Compartir</b> (el icono del cuadro con flecha hacia arriba situado en la barra inferior).</li>
+    <li data-i18n-html="docs_ios_pwa_s3">Desplázate hacia abajo y selecciona <b>Añadir a pantalla de inicio</b>.</li>
+    <li data-i18n-html="docs_ios_pwa_s4">Pulsa <b>Añadir</b> en la esquina superior derecha. Se creará el acceso directo con el icono oficial de Team Balack.</li>
+  </ol>
+  <p data-i18n="docs_ios_pwa_note">La app se abrirá a pantalla completa (sin la barra de direcciones de Safari), con persistencia local y soporte offline completo.</p>
+
+  <h3 data-i18n="docs_ios_native_h3">Método 2: Compilar como App Nativa en iOS (Xcode / AltStore)</h3>
+  <p data-i18n-html="docs_ios_native_desc">Si prefieres compilar la aplicación nativa en tu iPhone utilizando el código abierto del proyecto:</p>
   <ul>
-    <li data-i18n-html="docs_iphone_li1"><b>Autoalojamiento + pantalla de inicio (recomendado):</b> abre tu propia instancia de balackGym en Safari → <b>Compartir</b> → <b>Añadir a pantalla de inicio</b>. Obtendrás una experiencia a pantalla completa con icono propio, inicio por passkey y sincronización — sin fecha de caducidad ni cuotas.</li>
-    <li data-i18n-html="docs_iphone_li2"><b>Compilarlo en tu propio iPhone:</b> con un Mac y Xcode, la app nativa se ejecuta en tu dispositivo con una cuenta gratuita de Apple ID (Apple revoca la firma a los 7 días; se vuelve a compilar desde Xcode para renovarla). Consulta <a href="https://github.com/iamluissosa/openGym/blob/main/docs/MOBILE.md" rel="noopener">docs/MOBILE.md</a>.</li>
-    <li data-i18n-html="docs_iphone_li3"><b>¿Solo quieres probar?</b> La <a href="demo/index.html" rel="noopener">demo en vivo</a> funciona en cualquier navegador con datos de ejemplo.</li>
+    <li data-i18n-html="docs_ios_native_li1"><b>Con Mac y Xcode:</b> Abre la carpeta <code>frontend/ios</code> en Xcode, asigna tu equipo con una cuenta gratuita de Apple ID y pulsa <b>Run</b> con tu iPhone conectado por cable. La firma gratuita es renovable cada 7 días.</li>
+    <li data-i18n-html="docs_ios_native_li2"><b>Con AltStore o Sideloadly:</b> Permite automatizar la renovación de la firma de apps en tu iPhone por Wi-Fi sin necesidad de cuenta de desarrollador de pago.</li>
+    <li data-i18n-html="docs_ios_native_li3"><b>Protección contra purgas de iOS:</b> La versión móvil de balackGym guarda un espejo en archivo físico (<code>opengym-state.json</code>) para garantizar que iOS jamás borre tus registros cuando el teléfono tenga poco espacio de almacenamiento.</li>
   </ul>
 
-  <h2 id="selfhost" data-i18n="docs_selfhost_h2">Autoalojar con Docker</h2>
-  <p data-i18n-html="docs_selfhost_p1">La modalidad autoalojada añade perfiles con passkey, sincronización en todos tus dispositivos y (opcionalmente) un panel de administración. Solo necesitas <a href="https://docs.docker.com/get-docker/" rel="noopener">Docker</a> con Compose:</p>
-  <pre><code>git clone https://github.com/iamluissosa/openGym
-cd openGym
-cp .env.example .env
-docker compose pull    # prebuilt images (amd64 + arm64) — skip to build from source
-docker compose up -d</code></pre>
-  <p data-i18n-html="docs_selfhost_p2">Abre <code>http://localhost:8080</code>, pulsa en <b>Crear perfil</b> y listo. El primer inicio descarga los recursos multimedia de ejercicios (~140&nbsp;MB) una sola vez.</p>
-  <div class="note" data-i18n-html="docs_selfhost_note">¿Deseas acceder desde tu móvil con passkeys? Necesitarás un dominio con HTTPS — un cambio de dos líneas en <code>.env</code>. La guía completa, incluidos ejemplos de proxy inverso y opciones de registro por invitación o administrador, está en <a href="https://github.com/iamluissosa/openGym/blob/main/docs/SELF_HOSTING.md" rel="noopener">docs/SELF_HOSTING.md</a>.</div>
+  <h2 id="features-mobile" data-i18n="docs_features_h2">Funciones y ventajas móviles</h2>
+  <ul>
+    <li data-i18n-html="docs_f_wakelock"><b>Pantalla siempre encendida durante el entreno (Wake Lock):</b> Olvídate de tener que desbloquear el teléfono entre series con las manos sudadas o llenas de magnesio. La pantalla permanece activa mientras dure el entrenamiento y se suspende normalmente al terminar.</li>
+    <li data-i18n-html="docs_f_alarms"><b>Recordatorios locales exactos:</b> Configura qué días entrenas y a qué hora. La app programa alertas nativas al minuto exacto (mediante <code>SCHEDULE_EXACT_ALARM</code> en Android y notificaciones locales en iOS), sin depender de conexión a internet.</li>
+    <li data-i18n-html="docs_f_timer"><b>Temporizador de descanso háptico y sonoro:</b> Cronometra automáticamente los descansos entre series y te avisa mediante vibración cuando es hora de la siguiente serie.</li>
+    <li data-i18n-html="docs_f_offline"><b>100% Funcional sin internet:</b> Puedes entrenar en sótanos, zonas sin cobertura o en modo avión. Solo se descargan las animaciones de ejercicios la primera vez que las consultas y quedan guardadas en la caché del dispositivo.</li>
+  </ul>
 
   <h2 id="import" data-i18n="docs_import_h2">Importar historial de entrenamiento</h2>
-  <p data-i18n-html="docs_import_p1">¿Vienes de otra aplicación? <b>Ajustes → Datos → Importar de otra app</b> es compatible con:</p>
+  <p data-i18n-html="docs_import_p1">¿Vienes de otra aplicación de registro? No tienes que empezar de cero. En tu móvil ve a <b>Ajustes → Datos → Importar de otra app</b>. Es compatible con:</p>
   <ul>
-    <li data-i18n-html="docs_import_li1"><b>FitNotes</b> (tanto exportaciones de Android como FitNotes 2 para iOS)</li>
-    <li data-i18n-html="docs_import_li2"><b>Strong</b> y <b>Hevy</b> (exportaciones CSV — la duración de las sesiones se traslada para completar el mapa de actividad)</li>
-    <li data-i18n-html="docs_import_li3"><b>Apple Health</b> (historial de peso corporal desde la exportación XML)</li>
-    <li data-i18n="docs_import_li4">…y cualquier formato con columnas de fecha, nombre de ejercicio y peso/repeticiones</li>
+    <li data-i18n-html="docs_import_li1"><b>FitNotes:</b> Admite tanto exportaciones CSV de Android como FitNotes 2 para iOS.</li>
+    <li data-i18n-html="docs_import_li2"><b>Strong y Hevy:</b> Exportaciones en CSV. Conserva pesos, repeticiones, fechas y duración de sesiones para tu mapa de calor.</li>
+    <li data-i18n-html="docs_import_li3"><b>Apple Health:</b> Importa tu historial de peso corporal directamente del archivo XML de exportación de salud de iOS.</li>
+    <li data-i18n-html="docs_import_li4"><b>Archivos CSV genéricos:</b> Cualquier hoja de cálculo con columnas de fecha, nombre de ejercicio y peso/repeticiones.</li>
   </ul>
-  <p data-i18n="docs_import_p2">Los nombres de ejercicios se cotejan con la biblioteca de 1.324 ejercicios; cualquier término con dudas se crea como ejercicio personalizado sin hacer suposiciones erróneas. Se presenta un resumen previo antes de escribir datos, y la importación es idempotente — ejecutarla dos veces nunca duplicará entrenamientos.</p>
+  <p data-i18n="docs_import_p2">El sistema coteja los ejercicios con la base de datos de 1.324 ejercicios y te muestra una vista previa interactiva antes de guardar cualquier dato.</p>
 
-  <h2 id="backup" data-i18n="docs_backup_h2">Copias de seguridad</h2>
-  <p data-i18n-html="docs_backup_p"><b>Ajustes → Datos → Exportar copia de seguridad (JSON)</b> guarda todo tu registro — plan, entrenamientos, pesos, ajustes — en un único archivo. En la app móvil se envía mediante la hoja de compartir (Archivos, AirDrop, correo…); en el navegador se descarga. <b>Importar copia de seguridad</b> lo restaura en cualquier lugar: otro teléfono, tu servidor autoalojado o una instalación limpia. Ese archivo es la razón de ser de balackGym — tu historial en un archivo que <i>te pertenece</i>.</p>
+  <h2 id="backup" data-i18n="docs_backup_h2">Copias de seguridad y migración</h2>
+  <p data-i18n-html="docs_backup_p">En <b>Ajustes → Datos → Exportar copia de seguridad (JSON)</b> puedes generar un archivo único con todos tus planes, entrenamientos, registros de peso corporal y marcas personales. Al tocar exportar en tu móvil, se abre la hoja de compartir nativa (AirDrop, WhatsApp, Google Drive, iCloud, correo o guardar en Archivos). Puedes restaurar este archivo en cualquier momento en un nuevo teléfono Android o iPhone con total interoperabilidad.</p>
 
-  <h2 id="build" data-i18n="docs_build_h2">Compilar tú mismo</h2>
-  <p data-i18n="docs_build_p">Todo en esta web se compila desde el repositorio público:</p>
-  <ul>
-    <li data-i18n-html="docs_build_li1"><b>Web / autoalojado:</b> <code>docker compose up -d --build</code> construye el frontend dentro del contenedor — no requieres Node en local.</li>
-    <li data-i18n-html="docs_build_li2"><b>APK Android / app iOS:</b> los proyectos Capacitor se encuentran en <code>frontend/android</code> y <code>frontend/ios</code> — notas de compilación, firma y distribución en <a href="https://github.com/iamluissosa/openGym/blob/main/docs/MOBILE.md" rel="noopener">docs/MOBILE.md</a>.</li>
-  </ul>
+  <h2 id="faq" data-i18n="docs_faq_h2">Preguntas frecuentes móviles</h2>
+  <h3 data-i18n="docs_faq_q1">¿Por qué balackGym se distribuye directamente sin Play Store ni App Store?</h3>
+  <p data-i18n-html="docs_faq_a1">Por coherencia y libertad: las tiendas de aplicaciones imponen comisiones, restricciones de código abierto incompatibles con AGPL-3.0 y actúan como intermediarios forzosos. balackGym garantiza que la app te pertenece a ti, no a una tienda de apps.</p>
 
-  <h2 id="faq" data-i18n="docs_faq_h2">Preguntas frecuentes</h2>
-  <h3 data-i18n="docs_faq_q1">¿Es realmente gratis?</h3>
-  <p data-i18n-html="docs_faq_a1">Sí — gratis tanto en coste como en libertad (AGPL-3.0). Sin versión 'pro', sin funciones bloqueadas, sin publicidad, y la licencia asegura que cada derivado se mantenga abierto.</p>
-  <h3 data-i18n="docs_faq_q2">¿Qué datos recopila balackGym?</h3>
-  <p data-i18n="docs_faq_a2">Ninguno. No hay telemetría, ni analíticas, ni reportes de fallos. El único tráfico de red de la app móvil es descargar demostraciones de ejercicios desde un CDN; una instancia autoalojada se comunica exclusivamente con tu servidor.</p>
-  <h3 data-i18n="docs_faq_q3">¿Por qué no está en Google Play o App Store?</h3>
-  <p data-i18n="docs_faq_a3">Por decisión propia (y en iOS, por las restricciones de Apple para instalación libre). Las cuentas de tienda cuestan dinero, imponen términos incompatibles con AGPL y sitúan a un intermediario entre el usuario y una aplicación cuyo principio fundamental es que tus datos te pertenecen.</p>
-  <h3 data-i18n="docs_faq_q4">¿App móvil o versión autoalojada: cuál elegir?</h3>
-  <p data-i18n="docs_faq_a4">Si solo buscas registrar tus entrenamientos: la app móvil. Si prefieres tus datos en tu propio hardware sincronizados entre dispositivos y con perfiles para tus compañeros de entreno: versión autoalojada. Puedes empezar con la app y migrar a un servidor cuando quieras mediante el archivo de respaldo.</p>
-  <h3 data-i18n="docs_faq_q5">¿De dónde procede la base de datos de ejercicios?</h3>
-  <p data-i18n-html="docs_faq_a5">De <a href="https://github.com/hasaneyldrm/exercises-dataset" rel="noopener">hasaneyldrm/exercises-dataset</a> (licencia CC): 1.324 ejercicios con animaciones e instrucciones en 10 idiomas.</p>
+  <h3 data-i18n="docs_faq_q2">¿Qué permisos solicita la aplicación en mi teléfono?</h3>
+  <p data-i18n-html="docs_faq_a2">Solo permisos para enviar <b>notificaciones locales</b> (para el temporizador de descanso y los recordatorios de días de entreno). No solicita acceso a tu cámara, ni a tu ubicación, ni a tus contactos.</p>
+
+  <h3 data-i18n="docs_faq_q3">¿Puedo transferir mis entrenamientos entre un móvil Android y un iPhone?</h3>
+  <p data-i18n-html="docs_faq_a3">Sí, al 100%. El archivo de respaldo JSON generado por balackGym es exactamente el mismo en ambas plataformas. Solo expórtalo en tu teléfono actual e impórtalo en el nuevo.</p>
+
+  <h3 data-i18n="docs_faq_q4">¿Consume mucha batería la app durante el entrenamiento?</h3>
+  <p data-i18n-html="docs_faq_a4">No. El diseño utiliza un tema negro OLED ultra optimizado con cero procesos de telemetría o rastreo en segundo plano, maximizando la autonomía de tu batería durante las sesiones intensas de gimnasio.</p>
+
+  <div id="selfhost" class="note" style="margin-top:40px;">
+    ¿Buscas información técnica para desplegar tu propio servidor autoalojado con Docker? Consulta <a href="https://github.com/iamluissosa/openGym/blob/main/docs/SELF_HOSTING.md" target="_blank" rel="noopener">docs/SELF_HOSTING.md en GitHub</a>.
+  </div>
 </main>
 
 <footer><div class="wrap foot">
