@@ -33,6 +33,27 @@ nav {
 .nav-links a.cta { color: #0c0e12; background: var(--acc); padding: 7px 14px; border-radius: 10px; font-weight: 600; }
 .icn { fill: none; stroke: var(--acc); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 
+/* ---------- lang switcher ---------- */
+.lang-switch {
+  display: inline-flex; align-items: center;
+  background: var(--card2); border: 1px solid var(--line);
+  border-radius: 999px; padding: 2px; gap: 2px;
+}
+.lang-btn {
+  background: transparent; border: none; color: var(--dim);
+  font: 600 12px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 5px 9px; border-radius: 999px; cursor: pointer;
+  transition: all .16s ease; outline: none;
+}
+.lang-btn:hover { color: var(--fg); }
+.lang-btn.active {
+  background: var(--acc); color: #0c0e12; font-weight: 700;
+  box-shadow: 0 1px 6px rgba(48, 209, 88, .28);
+}
+.lang-btn:focus-visible {
+  outline: 2px solid var(--acc); outline-offset: 1px;
+}
+
 /* ---------- hero ---------- */
 header.hero { text-align: center; padding: 74px 0 30px; }
 .hero .logo {
@@ -162,8 +183,9 @@ footer { border-top: 1px solid var(--line); margin-top: 70px; padding: 30px 0 46
 .foot a { color: var(--dim); }
 
 @media (max-width: 640px) {
-  .nav-links { gap: 12px; }
+  .nav-links { gap: 10px; }
   .nav-links a.hide-s { display: none; }
-  .nav-in { gap: 12px; }
+  .nav-in { gap: 10px; }
+  .lang-btn { padding: 4px 7px; font-size: 11px; }
   header.hero { padding-top: 52px; }
 }

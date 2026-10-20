@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>balackGym — free, open-source gym &amp; body-weight tracker</title>
-<meta name="description" content="balackGym is a free, open-source gym & body-weight tracker. Download the Android app or self-host it with Docker — no account, no cloud, no telemetry.">
+<title>balackGym — registro de gimnasio y peso corporal libre y de código abierto</title>
+<meta name="description" content="balackGym es un registro de entrenamiento y peso corporal gratuito y de código abierto. Descarga la app Android o autoalójalo con Docker — sin cuenta, sin nube, sin telemetría.">
 <meta name="theme-color" content="#0c0e12">
 <meta property="og:title" content="balackGym — your workouts, your weights, your data">
 <meta property="og:description" content="Free, open-source gym & body-weight tracker. Android APK or self-hosted with Docker. No account, no cloud, no telemetry.">
@@ -15,6 +15,14 @@
 <link rel="icon" type="image/png" sizes="180x180" href="icon-180.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="stylesheet" href="styles.css">
+<script>
+(function(){
+  try {
+    var l = localStorage.getItem('site_lang') || 'es';
+    document.documentElement.lang = l;
+  } catch(e){}
+})();
+</script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"balackGym",
  "operatingSystem":"Android, Web","applicationCategory":"HealthApplication",
@@ -33,13 +41,17 @@
     balackGym
   </a>
   <div class="nav-links">
-    <a href="#features" class="hide-s">Features</a>
-    <a href="#screens" class="hide-s">Screenshots</a>
-    <a href="#demo" class="hide-s">Demo</a>
-    <a href="docs.html">Docs</a>
-    <a href="about.html" class="hide-s">About</a>
+    <a href="#features" class="hide-s" data-i18n="nav_features">Características</a>
+    <a href="#screens" class="hide-s" data-i18n="nav_screens">Capturas</a>
+    <a href="#demo" class="hide-s" data-i18n="nav_demo">Demo</a>
+    <a href="docs.html" data-i18n="nav_docs">Documentación</a>
+    <a href="about.html" class="hide-s" data-i18n="nav_about">Acerca de</a>
     <a href="https://github.com/DuarteSantos8/openGym" rel="noopener"><span data-gh="stars">GitHub</span></a>
-    <a class="cta" href="#download">Download</a>
+    <div class="lang-switch" role="group" aria-label="Cambiar idioma / Switch language">
+      <button type="button" class="lang-btn active" data-lang="es" aria-pressed="true" title="Español">ES</button>
+      <button type="button" class="lang-btn" data-lang="en" aria-pressed="false" title="English">EN</button>
+    </div>
+    <a class="cta" href="#download" data-i18n="nav_download">Descargar</a>
   </div>
 </div></nav>
 
@@ -48,141 +60,139 @@
     <img src="icon-512.png" alt="balackGym icon" width="108" height="108" style="border-radius:26px">
   </div>
   <h1>balackGym</h1>
-  <p class="tag">Your workouts. Your weights. Your data.</p>
-  <p class="sub">A free, open-source gym &amp; body-weight tracker.
-     No subscription, no account required, no telemetry — ever.</p>
+  <p class="tag" data-i18n="hero_tag">Tus entrenamientos. Tus pesos. Tus datos.</p>
+  <p class="sub" data-i18n="hero_sub">Un rastreador de gimnasio y peso corporal gratuito y de código abierto.
+     Sin suscripción, sin cuenta obligatoria, sin telemetría — nunca.</p>
   <div class="hero-btns">
-    <a class="btn" href="#download">Get balackGym</a>
-    <a class="btn ghost" href="#demo">Try the live demo</a>
+    <a class="btn" href="#download" data-i18n="hero_get">Obtener balackGym</a>
+    <a class="btn ghost" href="#demo" data-i18n="hero_try">Probar la demo en vivo</a>
     <a class="btn ghost" href="https://github.com/DuarteSantos8/openGym" rel="noopener">GitHub <span class="ct" data-gh="stars">★</span></a>
   </div>
 </div></header>
 
 <section id="features"><div class="wrap">
-  <p class="kicker">Everything a training log needs</p>
-  <h2>Built in the gym, not in a boardroom</h2>
-  <p class="lead">Every feature exists because it was needed on the gym floor — nothing is
-     there to sell you anything.</p>
+  <p class="kicker" data-i18n="feat_kicker">Todo lo que un diario de entrenamiento necesita</p>
+  <h2 data-i18n="feat_title">Creado en el gimnasio, no en una sala de juntas</h2>
+  <p class="lead" data-i18n="feat_lead">Cada función existe porque era necesaria en el gimnasio — nada está
+     ahí para venderte nada.</p>
   <div class="grid">
-    <div class="feat"><div class="ic">▶️</div><h3>Guided workouts</h3><p>Knows what day it is, starts today's session, pre-fills your weights from last time, times your rest, spots PRs.</p></div>
-    <div class="feat"><div class="ic">🏋️</div><h3>1,324 exercises</h3><p>Searchable library with animated demos, filterable by body part and the equipment you actually own — plus your own custom exercises.</p></div>
-    <div class="feat"><div class="ic">🗓️</div><h3>Weekly plan</h3><p>A routine per weekday, and any day can be rescheduled when life happens — without touching the plan.</p></div>
-    <div class="feat"><div class="ic">⚖️</div><h3>Body weight &amp; goal</h3><p>Interactive chart with your goal line; every change is colored by whether it moves toward it.</p></div>
-    <div class="feat"><div class="ic">💪</div><h3>Muscle map</h3><p>A body diagram shaded by how much work each muscle got — and which ones got nothing.</p></div>
-    <div class="feat"><div class="ic">🟩</div><h3>Activity heatmap</h3><p>A GitHub-style year view of your training time. Streaks included.</p></div>
-    <div class="feat"><div class="ic">📈</div><h3>Progression that follows a rule</h3><p>Linear, Greyskull LP, double progression or added time — per routine, overridable per exercise. Your weights are already right when the session opens, and every target tells you why.</p></div>
-    <div class="feat"><div class="ic">⏱️</div><h3>Timed sets</h3><p>Planks, hangs and carries are logged by time, with a timer for the set itself. Stop early and it logs what you actually held.</p></div>
-    <div class="feat"><div class="ic">🧮</div><h3>Estimated 1RM</h3><p>Per exercise, from your best eligible set — and it names which one. Won't guess above 12 reps.</p></div>
-    <div class="feat"><div class="ic">🔗</div><h3>Supersets &amp; cardio</h3><p>Pair exercises back-to-back with one rest, and log time + speed where weight × reps makes no sense.</p></div>
-    <div class="feat"><div class="ic">📤</div><h3>Share a plan</h3><p>Send someone your routines as a small file — no workouts, no weigh-ins — or print it as a clean PDF. Importing merges, never overwrites.</p></div>
-    <div class="feat"><div class="ic">🎯</div><h3>Effort per set</h3><p>Rate a set as RIR or RPE — whichever scale you already think in. Optional, and every set keeps the scale it was logged with.</p></div>
-    <div class="feat"><div class="ic">☀️</div><h3>Screen stays awake</h3><p>No unlocking the phone between sets. The screen stays lit while a workout runs, and lets go the moment you finish.</p></div>
-    <div class="feat"><div class="ic">📥</div><h3>Bring your history</h3><p>Import from FitNotes, Strong, Hevy — including the RPE they recorded — or body weight straight out of an Apple Health export.</p></div>
-    <div class="feat"><div class="ic">🌍</div><h3>12 languages</h3><p>Full UI translation, exercise instructions in 10 languages, loaded on demand.</p></div>
-    <div class="feat"><div class="ic">🔑</div><h3>Passkeys, not passwords</h3><p>Self-hosted profiles sign in with Face ID / fingerprint. Each person's data stays their own.</p></div>
-    <div class="feat"><div class="ic">🎨</div><h3>Designed, not assembled</h3><p>Light &amp; dark themes, 8 accent colors, a hand-drawn icon set. Looks the same on every phone.</p></div>
-    <div class="feat"><div class="ic">📦</div><h3>Yours to keep</h3><p>One-tap JSON export and import. Your training log is a file you own, not a row in someone's cloud.</p></div>
+    <div class="feat"><div class="ic">▶️</div><h3 data-i18n="f1_h">Entrenamientos guiados</h3><p data-i18n="f1_p">Sabe qué día es, inicia la sesión de hoy, autorrellena tus pesos anteriores, cronometra tus descansos y detecta PRs.</p></div>
+    <div class="feat"><div class="ic">🏋️</div><h3 data-i18n="f2_h">1.324 ejercicios</h3><p data-i18n="f2_p">Biblioteca con buscador y demostraciones animadas, filtrable por grupo muscular y equipamiento real — además de tus ejercicios personalizados.</p></div>
+    <div class="feat"><div class="ic">🗓️</div><h3 data-i18n="f3_h">Plan semanal</h3><p data-i18n="f3_p">Una rutina por día de la semana, reprogramable en cualquier momento ante imprevistos — sin alterar el plan base.</p></div>
+    <div class="feat"><div class="ic">⚖️</div><h3 data-i18n="f4_h">Peso corporal y objetivo</h3><p data-i18n="f4_p">Gráfico interactivo con línea de meta; cada cambio se colorea según si te acerca o aleja de ella.</p></div>
+    <div class="feat"><div class="ic">💪</div><h3 data-i18n="f5_h">Mapa muscular</h3><p data-i18n="f5_p">Diagrama corporal sombreado según el estímulo recibido en cada músculo — y cuáles no recibieron nada.</p></div>
+    <div class="feat"><div class="ic">🟩</div><h3 data-i18n="f6_h">Mapa de calor de actividad</h3><p data-i18n="f6_p">Vista anual estilo GitHub de tu tiempo de entrenamiento. Rachas incluidas.</p></div>
+    <div class="feat"><div class="ic">📈</div><h3 data-i18n="f7_h">Progresión basada en reglas</h3><p data-i18n="f7_p">Lineal, Greyskull LP, doble progresión o tiempo añadido — por rutina o por ejercicio. Tus pesos ya están listos al abrir la sesión con su justificación.</p></div>
+    <div class="feat"><div class="ic">⏱️</div><h3 data-i18n="f8_h">Series cronometradas</h3><p data-i18n="f8_p">Planchas, suspensiones y paseos se registran por tiempo con temporizador dedicado. Si paras antes, registra lo que realmente aguantaste.</p></div>
+    <div class="feat"><div class="ic">🧮</div><h3 data-i18n="f9_h">1RM estimado</h3><p data-i18n="f9_p">Por ejercicio, calculado de tu mejor serie válida (especificando cuál). No estima por encima de 12 repeticiones.</p></div>
+    <div class="feat"><div class="ic">🔗</div><h3 data-i18n="f10_h">Superseries y cardio</h3><p data-i18n="f10_p">Empareja ejercicios consecutivos con un solo descanso, y registra tiempo + velocidad donde el cálculo de peso × repeticiones no aplica.</p></div>
+    <div class="feat"><div class="ic">📤</div><h3 data-i18n="f11_h">Comparte un plan</h3><p data-i18n="f11_p">Envía tus rutinas como un archivo ligero — sin historial ni pesajes — o imprímelo en un PDF limpio. Importar fusiona, nunca sobrescribe.</p></div>
+    <div class="feat"><div class="ic">🎯</div><h3 data-i18n="f12_h">Esfuerzo por serie</h3><p data-i18n="f12_p">Puntúa cada serie con RIR o RPE — en la escala que prefieras. Opcional, conservando la escala con la que se registró.</p></div>
+    <div class="feat"><div class="ic">☀️</div><h3 data-i18n="f13_h">Pantalla siempre activa</h3><p data-i18n="f13_p">Sin desbloquear el teléfono entre series. La pantalla permanece encendida durante el entrenamiento y vuelve a reposar al terminar.</p></div>
+    <div class="feat"><div class="ic">📥</div><h3 data-i18n="f14_h">Trae tu historial</h3><p data-i18n="f14_p">Importa desde FitNotes, Strong, Hevy — incluyendo el RPE registrado — o el peso corporal directamente de una exportación de Apple Health.</p></div>
+    <div class="feat"><div class="ic">🌍</div><h3 data-i18n="f15_h">12 idiomas</h3><p data-i18n="f15_p">Traducción completa de la interfaz e instrucciones de ejercicios en 10 idiomas, cargadas bajo demanda.</p></div>
+    <div class="feat"><div class="ic">🔑</div><h3 data-i18n="f16_h">Passkeys, sin contraseñas</h3><p data-i18n="f16_p">Los perfiles autoalojados inician sesión con Face ID / huella dactilar. Los datos de cada persona son suyos.</p></div>
+    <div class="feat"><div class="ic">🎨</div><h3 data-i18n="f17_h">Diseñado, no ensamblado</h3><p data-i18n="f17_p">Temas claro y oscuro, 8 colores de acento y juego de iconos dibujado a mano. Mismo aspecto en cualquier teléfono.</p></div>
+    <div class="feat"><div class="ic">📦</div><h3 data-i18n="f18_h">Tuyo para siempre</h3><p data-i18n="f18_p">Exportación e importación en JSON con un toque. Tu registro de entrenamiento es un archivo que te pertenece, no una fila en la nube ajena.</p></div>
   </div>
 </div></section>
 
 <section id="screens"><div class="wrap">
-  <p class="kicker">Screenshots</p>
-  <h2>Five screens, zero clutter</h2>
+  <p class="kicker" data-i18n="shots_kicker">Capturas de pantalla</p>
+  <h2 data-i18n="shots_title">Cinco pantallas, cero distracciones</h2>
   <div class="shots">
-    <figure><img src="img/home.png" alt="balackGym home screen with weekly overview and body-weight chart" loading="lazy" width="1170" height="2532"><figcaption>Home</figcaption></figure>
-    <figure><img src="img/workout.png" alt="Guided workout screen with sets, rest timer and pre-filled weights" loading="lazy" width="1170" height="2532"><figcaption>Workout</figcaption></figure>
-    <figure><img src="img/stats.png" alt="Stats screen with activity heatmap and charts" loading="lazy" width="1170" height="2532"><figcaption>Stats</figcaption></figure>
-    <figure><img src="img/plan.png" alt="Weekly plan screen with routines per weekday" loading="lazy" width="1170" height="2532"><figcaption>Plan</figcaption></figure>
-    <figure><img src="img/library.png" alt="Exercise library with search and filters" loading="lazy" width="1170" height="2532"><figcaption>Library</figcaption></figure>
+    <figure><img src="img/home.png" alt="balackGym home screen with weekly overview and body-weight chart" loading="lazy" width="1170" height="2532"><figcaption data-i18n="shot_home">Inicio</figcaption></figure>
+    <figure><img src="img/workout.png" alt="Guided workout screen with sets, rest timer and pre-filled weights" loading="lazy" width="1170" height="2532"><figcaption data-i18n="shot_workout">Entrenamiento</figcaption></figure>
+    <figure><img src="img/stats.png" alt="Stats screen with activity heatmap and charts" loading="lazy" width="1170" height="2532"><figcaption data-i18n="shot_stats">Estadísticas</figcaption></figure>
+    <figure><img src="img/plan.png" alt="Weekly plan screen with routines per weekday" loading="lazy" width="1170" height="2532"><figcaption data-i18n="shot_plan">Plan</figcaption></figure>
+    <figure><img src="img/library.png" alt="Exercise library with search and filters" loading="lazy" width="1170" height="2532"><figcaption data-i18n="shot_library">Biblioteca</figcaption></figure>
   </div>
 </div></section>
 
 <section id="demo"><div class="wrap">
-  <p class="kicker">Live demo</p>
-  <h2>Try it right here</h2>
-  <p class="lead">This is the real app with seeded example data, running in your browser —
-     poke around, start a workout, change anything.</p>
+  <p class="kicker" data-i18n="demo_kicker">Demo en vivo</p>
+  <h2 data-i18n="demo_title">Pruébalo aquí mismo</h2>
+  <p class="lead" data-i18n="demo_lead">Esta es la aplicación real con datos de ejemplo, ejecutándose en tu navegador —
+     explora, inicia un entrenamiento, cambia lo que quieras.</p>
   <div class="demo-wrap">
     <div class="phone"><iframe src="https://duartesantos8.github.io/openGym/" title="balackGym live demo" loading="lazy"></iframe></div>
   </div>
-  <p class="demo-note">Demo data lives only in this browser tab-family and can be reset in its
-     Settings. Prefer a full window? <a href="https://duartesantos8.github.io/openGym/" rel="noopener">Open the demo full-screen →</a></p>
+  <p class="demo-note"><span data-i18n="demo_note">Los datos de la demo viven solo en esta pestaña del navegador y se pueden reiniciar en Ajustes. ¿Prefieres pantalla completa? </span><a href="https://duartesantos8.github.io/openGym/" rel="noopener" data-i18n="demo_fs">Abrir la demo en pantalla completa →</a></p>
 </div></section>
 
 <section id="download"><div class="wrap">
-  <p class="kicker">Get balackGym</p>
-  <h2>One app, two flavors</h2>
-  <p class="lead">Same codebase, your choice of where the data lives: entirely on your phone,
-     or on a server you control.</p>
+  <p class="kicker" data-i18n="dl_kicker">Obtén balackGym</p>
+  <h2 data-i18n="dl_title">Una app, dos modalidades</h2>
+  <p class="lead" data-i18n="dl_lead">Mismo código base, tú decides dónde residen los datos: totalmente en tu teléfono,
+     o en un servidor bajo tu control.</p>
   <div class="duo">
     <div class="card hl">
-      <h3>📱 Mobile app</h3>
-      <p class="for">For anyone — install and you're done.</p>
+      <h3 data-i18n="dl_card1_h">📱 Aplicación móvil</h3>
+      <p class="for" data-i18n="dl_card1_for">Para cualquier persona — instala y listo.</p>
       <ul>
-        <li>Everything stays on your phone</li>
-        <li>No account, no server, no setup</li>
-        <li>Native workout-day reminders</li>
-        <li>Backups via the share sheet</li>
-        <li class="no">No cross-device sync</li>
+        <li data-i18n="dl_card1_li1">Todo se queda en tu teléfono</li>
+        <li data-i18n="dl_card1_li2">Sin cuenta, sin servidor, sin configuración</li>
+        <li data-i18n="dl_card1_li3">Recordatorios nativos en días de entrenamiento</li>
+        <li data-i18n="dl_card1_li4">Copias de seguridad mediante el menú de compartir</li>
+        <li class="no" data-i18n="dl_card1_li5">Sin sincronización entre dispositivos</li>
       </ul>
-      <a class="btn" href="balackgym.apk" download>Download for Android</a>
-      <p class="meta">v1.2.4 · 4.3 MB · Android 6.0+ · signed APK, sideload (your browser will ask — that's normal outside the Play Store)</p>
-      <p class="meta"><b>iPhone?</b> Apple doesn't allow installs outside the App Store — use the
-         self-hosted version as a home-screen app instead, or see <a href="docs.html#iphone">the docs</a>.</p>
+      <a class="btn" href="balackgym.apk" download data-i18n="dl_card1_btn">Descargar para Android</a>
+      <p class="meta" data-i18n="dl_card1_meta1">v1.2.4 · 4.3 MB · Android 6.0+ · APK firmado, sideload (tu navegador te pedirá confirmación — es normal fuera de Play Store)</p>
+      <p class="meta" data-i18n-html="dl_card1_meta2"><b>¿iPhone?</b> Apple no permite instalaciones fuera de la App Store — usa la versión autoalojada agregándola a tu pantalla de inicio, o consulta <a href="docs.html#iphone">la documentación</a>.</p>
     </div>
     <div class="card">
-      <h3>🖥️ Self-hosted</h3>
-      <p class="for">For homelabbers — and their friends &amp; family.</p>
+      <h3 data-i18n="dl_card2_h">🖥️ Autoalojado</h3>
+      <p class="for" data-i18n="dl_card2_for">Para homelabbers — y sus amigos y familiares.</p>
       <ul>
-        <li>Sync across all your devices</li>
-        <li>Passkey profiles for multiple people</li>
-        <li>Your data readable on the desktop</li>
-        <li>Works as a home-screen app on iPhone &amp; Android</li>
-        <li>One <code>docker compose up</code></li>
+        <li data-i18n="dl_card2_li1">Sincroniza en todos tus dispositivos</li>
+        <li data-i18n="dl_card2_li2">Perfiles con passkey para múltiples usuarios</li>
+        <li data-i18n="dl_card2_li3">Tus datos accesibles en el ordenador</li>
+        <li data-i18n="dl_card2_li4">Funciona como web-app en pantalla de inicio en iPhone y Android</li>
+        <li data-i18n-html="dl_card2_li5">Un simple <code>docker compose up</code></li>
       </ul>
-      <a class="btn ghost" href="docs.html#selfhost">Self-hosting guide</a>
-      <p class="meta">AGPL-3.0 · prebuilt images for amd64 + arm64</p>
+      <a class="btn ghost" href="docs.html#selfhost" data-i18n="dl_card2_btn">Guía de autoalojamiento</a>
+      <p class="meta" data-i18n="dl_card2_meta">AGPL-3.0 · imágenes precompiladas para amd64 + arm64</p>
     </div>
   </div>
 </div></section>
 
 <section id="story"><div class="wrap">
   <div class="story">
-    <p class="kicker">Why balackGym exists</p>
-    <blockquote>balackGym started as <strong>a tiny app I built for myself</strong> — I just wanted to
-      log my workouts and weight without a subscription app claiming my training data.
-      Then friends wanted in, then it grew a mind of its own.</blockquote>
-    <p class="who">— Duarte Santos · <a href="about.html">read the whole story →</a></p>
+    <p class="kicker" data-i18n="story_kicker">¿Por qué existe balackGym?</p>
+    <blockquote data-i18n-html="story_quote">balackGym comenzó como <strong>una pequeña app que construí para mí</strong> — solo quería
+      registrar mis entrenamientos y peso sin una app de suscripción adueñándose de mis datos de entrenamiento.
+      Luego mis amigos quisieron usarla, y fue cobrando vida propia.</blockquote>
+    <p class="who" data-i18n-html="story_who">— Duarte Santos · <a href="about.html">conoce la historia completa →</a></p>
   </div>
 </div></section>
 
 <section id="opensource"><div class="wrap">
-  <p class="kicker">Open source</p>
-  <h2>AGPL-licensed, forever</h2>
-  <p class="lead">The code is public, the license keeps every fork open, and there is no
-     commercial version waiting behind a curtain. If balackGym is useful to you,
-     a ⭐ on GitHub helps more people find it.</p>
+  <p class="kicker" data-i18n="os_kicker">Código abierto</p>
+  <h2 data-i18n="os_title">Licencia AGPL, para siempre</h2>
+  <p class="lead" data-i18n="os_lead">El código es público, la licencia mantiene cada bifurcación abierta y no hay una
+     versión comercial esperando tras bambalinas. Si balackGym te resulta útil,
+     una ⭐ en GitHub ayuda a que más personas lo descubran.</p>
   <div class="os">
-    <div class="stat"><b data-gh="stars-n">–</b><span>GitHub stars</span></div>
-    <div class="stat"><b data-gh="forks-n">–</b><span>forks</span></div>
-    <div class="stat"><b data-gh="issues-n">–</b><span>open issues</span></div>
-    <div class="stat"><b>1,324</b><span>exercises</span></div>
-    <div class="stat"><b>12</b><span>languages</span></div>
+    <div class="stat"><b data-gh="stars-n">–</b><span data-i18n="os_stars">estrellas en GitHub</span></div>
+    <div class="stat"><b data-gh="forks-n">–</b><span data-i18n="os_forks">bifurcaciones</span></div>
+    <div class="stat"><b data-gh="issues-n">–</b><span data-i18n="os_issues">issues abiertas</span></div>
+    <div class="stat"><b>1,324</b><span data-i18n="os_ex">ejercicios</span></div>
+    <div class="stat"><b>12</b><span data-i18n="os_langs">idiomas</span></div>
   </div>
   <div class="hero-btns" style="justify-content:flex-start;margin-top:24px">
-    <a class="btn ghost" href="https://github.com/DuarteSantos8/openGym" rel="noopener">balackGym on GitHub</a>
-    <a class="btn ghost" href="https://github.com/DuarteSantos8/openGym/blob/main/CONTRIBUTING.md" rel="noopener">Contributing</a>
-    <a class="btn ghost" href="https://github.com/DuarteSantos8/openGym/blob/main/CHANGELOG.md" rel="noopener">Changelog</a>
+    <a class="btn ghost" href="https://github.com/DuarteSantos8/openGym" rel="noopener" data-i18n="os_repo">balackGym en GitHub</a>
+    <a class="btn ghost" href="https://github.com/DuarteSantos8/openGym/blob/main/CONTRIBUTING.md" rel="noopener" data-i18n="os_contrib">Contribuir</a>
+    <a class="btn ghost" href="https://github.com/DuarteSantos8/openGym/blob/main/CHANGELOG.md" rel="noopener" data-i18n="os_changelog">Historial de cambios</a>
   </div>
 </div></section>
 
 <footer><div class="wrap foot">
-  <span>balackGym · AGPL-3.0 · © 2026 <a href="https://duarte-santos.ch" rel="noopener">Duarte Santos</a></span>
+  <span data-i18n-html="foot_copy">balackGym · AGPL-3.0 · © 2026 <a href="https://duarte-santos.ch" rel="noopener">Duarte Santos</a></span>
   <div class="links">
-    <a href="docs.html">Docs</a>
-    <a href="about.html" class="hide-s">About</a>
+    <a href="docs.html" data-i18n="nav_docs">Documentación</a>
+    <a href="about.html" class="hide-s" data-i18n="nav_about">Acerca de</a>
     <a href="https://github.com/DuarteSantos8/openGym" rel="noopener">GitHub</a>
-    <a href="https://duartesantos8.github.io/openGym/" rel="noopener">Live demo</a>
+    <a href="https://duartesantos8.github.io/openGym/" rel="noopener" data-i18n="foot_demo">Demo en vivo</a>
   </div>
 </div></footer>
 
