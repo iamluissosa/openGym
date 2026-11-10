@@ -1,6 +1,7 @@
 -- ============================================================================
 -- openGym - PostgreSQL Database Schema (Supabase)
--- Versión: 2.0.0 (Multi-Tenant, Coach Portal & Daily Routines Support)
+-- Versión: 2.1.0 (Autorización entrenador-alumno: coach_athletes + allow_own_routines)
+-- Bases ya creadas con 2.0.0: aplicar scripts/migrations/001_coach_athlete_access.sql
 -- ============================================================================
 
 -- Habilitar extensión criptográfica para generación de UUIDs y hashes seguros
@@ -44,6 +45,9 @@ CREATE TABLE IF NOT EXISTS users (
     enrollment_token VARCHAR(64) UNIQUE,
     token_expires_at TIMESTAMPTZ,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    -- Apagado: un alumno con entrenador no arma rutinas propias. La API no reescribe
+    -- el JSON de estado (la rutina prescrita se copia ahí para poder ejecutarla).
+    allow_own_routines BOOLEAN NOT NULL DEFAULT FALSE,
     session_version INT NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -59,6 +63,30 @@ CREATE TRIGGER set_timestamp_users
 BEFORE UPDATE ON users
 FOR EACH ROW
 EXECUTE FUNCTION trigger_set_timestamp();
+
+-- ----------------------------------------------------------------------------
+-- 3b. TABLA: coach_athletes (vínculo entrenador-alumno, con historial)
+-- Hoy el índice único parcial impone UN entrenador activo por alumno.
+-- users.coach_id queda como copia de ese vínculo (compatible con datos previos).
+-- Para varios entrenadores a la vez: DROP INDEX coach_athletes_one_active_coach.
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS coach_athletes (
+    id VARCHAR(32) PRIMARY KEY,
+    coach_id VARCHAR(32) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    athlete_id VARCHAR(32) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    assigned_by VARCHAR(32) REFERENCES users(id) ON DELETE SET NULL,
+    assigned_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    ended_at TIMESTAMPTZ,
+    CONSTRAINT coach_athletes_not_self CHECK (coach_id <> athlete_id)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS coach_athletes_one_active_coach
+  ON coach_athletes (athlete_id)
+  WHERE ended_at IS NULL;
+
+CREATE INDEX IF NOT EXISTS coach_athletes_coach_active
+  ON coach_athletes (coach_id)
+  WHERE ended_at IS NULL;
 
 -- ----------------------------------------------------------------------------
 -- 4. TABLA: passkey_credentials (Credenciales FIDO2 / WebAuthn)

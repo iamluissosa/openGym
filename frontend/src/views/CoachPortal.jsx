@@ -211,7 +211,7 @@ export default function CoachPortal() {
       <div className="hdr">
         <button
           className="iconbtn"
-          onClick={() => nav("/admin")}
+          onClick={() => nav(user?.admin ? "/admin" : "/settings")}
           aria-label="Volver"
         >
           <Icon name="chevronLeft" />
