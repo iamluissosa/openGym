@@ -7,7 +7,8 @@ import {
   generateAuthenticationOptions, verifyAuthenticationResponse
 } from '@simplewebauthn/server';
 import webpush from 'web-push';
-import { query, pool } from './db.js';
+import { query, getClient } from './db.js';
+import { createAccessControl } from './access.js';
 
 const PORT = +(process.env.PORT || 3000);
 const RP_ID = process.env.RP_ID || 'localhost';
@@ -161,6 +162,30 @@ function parseCookies(cookieHeader) {
 
 const isAdmin = user => !!user && (user.role === 'ADMIN' || ADMIN_UIDS.includes(user.id));
 
+const access = createAccessControl({
+  query: (text, params) => query(text, params),
+  getClient,
+  isAdmin,
+  adminUids: ADMIN_UIDS
+});
+
+async function toPublicUser(user) {
+  return {
+    id: user.id,
+    name: user.name,
+    role: user.role,
+    admin: isAdmin(user),
+    allowOwnRoutines: await access.canUseOwnRoutines(user),
+    coachId: user.coach_id || null
+  };
+}
+
+async function requireUser(req, res) {
+  const user = await readSession(req);
+  if (!user) { json(res, 401, { error: 'not signed in' }); return null; }
+  return user;
+}
+
 function makeSession(user) {
   const exp = Date.now() + SESSION_DAYS * 86400000;
   return sign(user.id + ':' + exp + ':' + (user.session_version || 0));
@@ -176,7 +201,7 @@ async function readSession(req) {
   if (!uid || +exp < Date.now()) return null;
 
   try {
-    const res = await query('SELECT id, name, email, role, is_active, session_version FROM users WHERE id = $1', [uid]);
+    const res = await query('SELECT id, name, email, role, is_active, session_version, coach_id, allow_own_routines FROM users WHERE id = $1', [uid]);
     if (!res.rows.length) return null;
     const user = res.rows[0];
     if (user.is_active === false) return null;
@@ -194,14 +219,6 @@ async function requireAdmin(req, res) {
   if (!user) { json(res, 401, { error: 'not signed in' }); return null; }
   if (!isAdmin(user)) { json(res, 403, { error: 'forbidden' }); return null; }
   return user;
-}
-
-async function requireCoachOrAdmin(req, res) {
-  const user = await readSession(req);
-  if (!user) { json(res, 401, { error: 'not signed in' }); return null; }
-  if (isAdmin(user) || user.role === 'COACH') return user;
-  json(res, 403, { error: 'forbidden' });
-  return null;
 }
 
 function getOrigin(req) {
@@ -308,7 +325,7 @@ const routes = {
   'GET /api/me': async (req, res) => {
     const user = await readSession(req);
     if (!user) return json(res, 401, { error: 'not signed in' });
-    json(res, 200, { user: { id: user.id, name: user.name, role: user.role, admin: isAdmin(user) } });
+    json(res, 200, { user: await toPublicUser(user) });
   },
 
   'POST /api/register/options': async (req, res) => {
@@ -408,7 +425,7 @@ const routes = {
           UPDATE users
           SET enrollment_token = NULL, token_expires_at = NULL, is_active = true
           WHERE id = $1
-          RETURNING id, name, email, role, is_active, session_version;
+          RETURNING id, name, email, role, is_active, session_version, coach_id, allow_own_routines;
         `, [c.uid]);
         user = uRes.rows[0];
       } else {
@@ -416,7 +433,7 @@ const routes = {
           INSERT INTO users (id, name, role, is_active, session_version, created_at)
           VALUES ($1, $2, 'ATHLETE', true, 0, NOW())
           ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name
-          RETURNING id, name, email, role, is_active, session_version;
+          RETURNING id, name, email, role, is_active, session_version, coach_id, allow_own_routines;
         `, [c.uid, c.name]);
         user = uRes.rows[0];
       }
@@ -431,7 +448,7 @@ const routes = {
       return json(res, 500, { error: 'Error al registrar credencial en base de datos: ' + e.message });
     }
 
-    json(res, 200, { user: { id: user.id, name: user.name, role: user.role, admin: isAdmin(user) } }, { 'Set-Cookie': sessionCookie(user, req) });
+    json(res, 200, { user: await toPublicUser(user) }, { 'Set-Cookie': sessionCookie(user, req) });
   },
 
   'POST /api/login/options': async (req, res) => {
@@ -454,7 +471,8 @@ const routes = {
     try {
       const resCred = await query(`
         SELECT c.id, c.user_id, c.public_key, c.counter, c.transports,
-               u.id as uid, u.name, u.email, u.role, u.is_active, u.session_version
+               u.id as uid, u.name, u.email, u.role, u.is_active, u.session_version,
+               u.coach_id, u.allow_own_routines
         FROM passkey_credentials c
         JOIN users u ON u.id = c.user_id
         WHERE c.id = $1;
@@ -511,10 +529,12 @@ const routes = {
       email: cred.email,
       role: cred.role,
       is_active: cred.is_active,
-      session_version: cred.session_version
+      session_version: cred.session_version,
+      coach_id: cred.coach_id,
+      allow_own_routines: cred.allow_own_routines
     };
 
-    json(res, 200, { user: { id: user.id, name: user.name, role: user.role, admin: isAdmin(user) } }, { 'Set-Cookie': sessionCookie(user, req) });
+    json(res, 200, { user: await toPublicUser(user) }, { 'Set-Cookie': sessionCookie(user, req) });
   },
 
   'POST /api/logout': async (req, res) => json(res, 200, { ok: true }, { 'Set-Cookie': clearCookie(req) }),
@@ -550,6 +570,8 @@ const routes = {
   'PUT /api/data': async (req, res) => {
     const user = await readSession(req);
     if (!user) return json(res, 401, { error: 'not signed in' });
+    // allow_own_routines se informa en /api/me (access.canUseOwnRoutines). No se recorta
+    // state.routines: DailyRoutineCard copia ahí la rutina prescrita para poder ejecutarla.
     const body = await readBody(req);
     if (!body.state || typeof body.state !== 'object') return json(res, 400, { error: 'state required' });
     delete body.state.active;
@@ -684,9 +706,11 @@ const routes = {
   },
 
   'GET /api/admin/user': async (req, res) => {
-    const admin = await requireAdmin(req, res);
-    if (!admin) return;
+    const actor = await requireUser(req, res);
+    if (!actor) return;
     const id = new URL(req.url, 'http://x').searchParams.get('id');
+    const authz = await access.authorizeUserRecord(actor, id);
+    if (!authz.ok) return json(res, authz.status, { error: authz.error });
     try {
       const resUser = await query(`
         SELECT u.id, u.name, u.email, u.role, u.is_active, u.created_at,
@@ -722,15 +746,14 @@ const routes = {
   },
 
   'POST /api/admin/user/disable': async (req, res) => {
-    const admin = await requireAdmin(req, res);
-    if (!admin) return;
+    const actor = await requireUser(req, res);
+    if (!actor) return;
     const body = await readBody(req);
-    if (ADMIN_UIDS.includes(body.id)) return json(res, 400, { error: 'cannot disable an admin' });
     try {
-      const r = await query('UPDATE users SET is_active = $1 WHERE id = $2 RETURNING id, is_active', [!body.disabled, body.id]);
-      if (!r.rows.length) return json(res, 404, { error: 'no such user' });
+      const result = await access.setUserActive(actor, { id: body.id, disabled: !!body.disabled });
+      if (!result.ok) return json(res, result.status, { error: result.error });
       if (body.disabled) presence.delete(body.id);
-      json(res, 200, { ok: true, id: body.id, disabled: !!body.disabled });
+      json(res, 200, { ok: true, id: result.id, disabled: result.disabled });
     } catch (e) {
       console.error('POST /api/admin/user/disable error:', e.message);
       json(res, 500, { error: 'Error al cambiar estado de usuario' });
@@ -790,20 +813,14 @@ const routes = {
     }
   },
 
-  /* ---------- coach / athletes management & prescription (Phase 3) ---------- */
+  /* ---------- coach / athletes management & prescription (Phase 3 + authz) ---------- */
   'GET /api/admin/athletes': async (req, res) => {
-    const caller = await requireCoachOrAdmin(req, res);
+    const caller = await requireUser(req, res);
     if (!caller) return;
     try {
-      const resAthletes = await query(`
-        SELECT u.id, u.name, u.email, u.role, u.is_active, u.created_at,
-               (SELECT COUNT(*)::int FROM daily_assignments da WHERE da.athlete_id = u.id) as total_assignments,
-               (SELECT status FROM daily_assignments da WHERE da.athlete_id = u.id AND da.scheduled_date = CURRENT_DATE) as today_status
-        FROM users u
-        WHERE u.role = 'ATHLETE'
-        ORDER BY u.created_at DESC;
-      `);
-      json(res, 200, { athletes: resAthletes.rows });
+      const result = await access.listAthletes(caller);
+      if (!result.ok) return json(res, result.status, { error: result.error });
+      json(res, 200, { athletes: result.athletes });
     } catch (err) {
       console.error('GET /api/admin/athletes error:', err);
       json(res, 500, { error: 'Error al consultar atletas' });
@@ -811,31 +828,46 @@ const routes = {
   },
 
   'POST /api/admin/athletes': async (req, res) => {
-    const caller = await requireCoachOrAdmin(req, res);
+    const caller = await requireUser(req, res);
     if (!caller) return;
     const body = await readBody(req);
-    const name = String(body.name || '').trim().slice(0, 80);
-    const email = String(body.email || '').trim().toLowerCase().slice(0, 120);
-    if (!name || !email) return json(res, 400, { error: 'Nombre y correo electrónico son requeridos' });
-
     const athleteId = crypto.randomBytes(12).toString('base64url');
+    const linkId = 'ca_' + crypto.randomBytes(10).toString('base64url');
     const enrollmentToken = crypto.randomBytes(24).toString('hex');
     const expiresAt = new Date(Date.now() + 7 * 86400000);
-
     try {
-      const result = await query(`
-        INSERT INTO users (id, name, email, role, coach_id, enrollment_token, token_expires_at)
-        VALUES ($1, $2, $3, 'ATHLETE', $4, $5, $6)
-        RETURNING id, name, email, role, enrollment_token, token_expires_at;
-      `, [athleteId, name, email, caller.id, enrollmentToken, expiresAt]);
-
-      const athlete = result.rows[0];
-      const enrollmentUrl = `${getOrigin(req)}/?enroll=${enrollmentToken}`;
-      json(res, 201, { athlete, enrollmentUrl });
+      const result = await access.createAthlete(caller, {
+        name: body.name,
+        email: body.email,
+        coachId: body.coachId || body.coach_id || null
+      }, { athleteId, linkId, enrollmentToken, expiresAt });
+      if (!result.ok) return json(res, result.status, { error: result.error });
+      const enrollmentUrl = `${getOrigin(req)}/?enroll=${result.athlete.enrollment_token}`;
+      json(res, 201, { athlete: result.athlete, enrollmentUrl });
     } catch (err) {
-      if (err.code === '23505') return json(res, 409, { error: 'El correo electrónico ya está registrado' });
       console.error('POST /api/admin/athletes error:', err);
       json(res, 500, { error: 'Error al registrar atleta en base de datos' });
+    }
+  },
+
+  'POST /api/admin/athletes/reassign': async (req, res) => {
+    const caller = await requireUser(req, res);
+    if (!caller) return;
+    const body = await readBody(req);
+    const hasCoach = Object.prototype.hasOwnProperty.call(body, 'coachId')
+      || Object.prototype.hasOwnProperty.call(body, 'coach_id');
+    if (!hasCoach) return json(res, 400, { error: 'coachId requerido (null para dejar al alumno sin entrenador)' });
+    const coachId = body.coachId === undefined ? body.coach_id : body.coachId;
+    try {
+      const result = await access.reassignAthlete(caller, {
+        athleteId: body.athleteId || body.athlete_id,
+        coachId: coachId || null
+      }, { linkId: 'ca_' + crypto.randomBytes(10).toString('base64url') });
+      if (!result.ok) return json(res, result.status, { error: result.error });
+      json(res, 200, { ok: true, athleteId: result.athleteId, coachId: result.coachId });
+    } catch (err) {
+      console.error('POST /api/admin/athletes/reassign error:', err);
+      json(res, 500, { error: 'Error al reasignar atleta' });
     }
   },
 
@@ -857,15 +889,12 @@ const routes = {
   },
 
   'GET /api/coach/templates': async (req, res) => {
-    const caller = await requireCoachOrAdmin(req, res);
+    const caller = await requireUser(req, res);
     if (!caller) return;
     try {
-      const resTpl = await query(`
-        SELECT id, coach_id, name, description, emoji, progression_policy, exercises, created_at, updated_at
-        FROM routine_templates
-        ORDER BY updated_at DESC;
-      `);
-      json(res, 200, { templates: resTpl.rows });
+      const result = await access.listTemplates(caller);
+      if (!result.ok) return json(res, result.status, { error: result.error });
+      json(res, 200, { templates: result.templates });
     } catch (err) {
       console.error('GET /api/coach/templates error:', err);
       json(res, 500, { error: 'Error al obtener plantillas' });
@@ -873,30 +902,14 @@ const routes = {
   },
 
   'POST /api/coach/templates': async (req, res) => {
-    const caller = await requireCoachOrAdmin(req, res);
+    const caller = await requireUser(req, res);
     if (!caller) return;
     const body = await readBody(req);
-    const name = String(body.name || '').trim().slice(0, 100);
-    if (!name) return json(res, 400, { error: 'Nombre de rutina requerido' });
     const templateId = String(body.id || '').trim() || ('tpl_' + crypto.randomBytes(10).toString('base64url'));
-    const description = String(body.description || '').slice(0, 500);
-    const emoji = String(body.emoji || 'dumbbell').slice(0, 32);
-    const progressionPolicy = String(body.progression_policy || 'linear').slice(0, 32);
-    const exercises = Array.isArray(body.exercises) ? body.exercises : [];
-
     try {
-      const resTpl = await query(`
-        INSERT INTO routine_templates (id, coach_id, name, description, emoji, progression_policy, exercises)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
-        ON CONFLICT (id) DO UPDATE SET
-          name = EXCLUDED.name,
-          description = EXCLUDED.description,
-          emoji = EXCLUDED.emoji,
-          progression_policy = EXCLUDED.progression_policy,
-          exercises = EXCLUDED.exercises
-        RETURNING *;
-      `, [templateId, caller.id, name, description, emoji, progressionPolicy, JSON.stringify(exercises)]);
-      json(res, 200, { template: resTpl.rows[0] });
+      const result = await access.saveTemplate(caller, { ...body, id: body.id ? templateId : undefined }, { templateId });
+      if (!result.ok) return json(res, result.status, { error: result.error });
+      json(res, 200, { template: result.template });
     } catch (err) {
       console.error('POST /api/coach/templates error:', err);
       json(res, 500, { error: 'Error al guardar plantilla' });
@@ -904,38 +917,23 @@ const routes = {
   },
 
   'POST /api/coach/assign-routine': async (req, res) => {
-    const caller = await requireCoachOrAdmin(req, res);
+    const caller = await requireUser(req, res);
     if (!caller) return;
     const body = await readBody(req);
-    const { athleteIds, scheduledDate, routine, routineTemplateId } = body;
-    if (!Array.isArray(athleteIds) || !athleteIds.length || !scheduledDate || !routine) {
-      return json(res, 400, { error: 'Se requiere lista de atletas, fecha programada y datos de rutina' });
-    }
-
     try {
-      const assigned = [];
-      for (const athleteId of athleteIds) {
-        const asgnId = 'asgn_' + crypto.randomBytes(12).toString('base64url');
-        const r = await query(`
-          INSERT INTO daily_assignments (id, athlete_id, coach_id, scheduled_date, routine_template_id, routine_payload, status)
-          VALUES ($1, $2, $3, $4, $5, $6, 'PENDING')
-          ON CONFLICT (athlete_id, scheduled_date)
-          DO UPDATE SET
-            routine_payload = EXCLUDED.routine_payload,
-            status = 'PENDING',
-            coach_id = EXCLUDED.coach_id,
-            confirmed_at = NULL
-          RETURNING *;
-        `, [asgnId, athleteId, caller.id, scheduledDate, routineTemplateId || null, JSON.stringify(routine)]);
-        assigned.push(r.rows[0]);
-
-        sendPush(athleteId, {
-          title: `🏋️ Nueva Rutina: ${routine.name}`,
-          body: `Tu entrenador programó tu sesión para el ${scheduledDate}. ¡Confirma tu día!`,
+      const result = await access.assignRoutine(caller, body, {
+        nextAssignmentId: () => 'asgn_' + crypto.randomBytes(12).toString('base64url')
+      });
+      if (!result.ok) return json(res, result.status, { error: result.error });
+      const routineName = body.routine && body.routine.name;
+      for (const row of result.assignments) {
+        sendPush(row.athlete_id, {
+          title: `🏋️ Nueva Rutina: ${routineName || 'sesión'}`,
+          body: `Tu entrenador programó tu sesión para el ${body.scheduledDate}. ¡Confirma tu día!`,
           tag: 'routine-assigned'
         }).catch(() => {});
       }
-      json(res, 200, { ok: true, count: assigned.length, assignments: assigned });
+      json(res, 200, { ok: true, count: result.assignments.length, assignments: result.assignments });
     } catch (err) {
       console.error('POST /api/coach/assign-routine error:', err);
       json(res, 500, { error: 'Error al procesar asignación' });
@@ -943,21 +941,13 @@ const routes = {
   },
 
   'GET /api/coach/assignments': async (req, res) => {
-    const caller = await requireCoachOrAdmin(req, res);
+    const caller = await requireUser(req, res);
     if (!caller) return;
     const dateParam = new URL(req.url, 'http://x').searchParams.get('date');
-    const targetDate = dateParam || new Date().toISOString().slice(0, 10);
     try {
-      const resAsgn = await query(`
-        SELECT da.id, da.athlete_id, u.name as athlete_name, u.email as athlete_email,
-               da.scheduled_date, da.routine_payload, da.status, da.athlete_notes,
-               da.session_rpe, da.confirmed_at, da.completed_at, da.created_at
-        FROM daily_assignments da
-        JOIN users u ON u.id = da.athlete_id
-        WHERE da.scheduled_date = $1
-        ORDER BY da.created_at DESC;
-      `, [targetDate]);
-      json(res, 200, { assignments: resAsgn.rows, date: targetDate });
+      const result = await access.listAssignments(caller, dateParam || undefined);
+      if (!result.ok) return json(res, result.status, { error: result.error });
+      json(res, 200, { assignments: result.assignments, date: result.date });
     } catch (err) {
       console.error('GET /api/coach/assignments error:', err);
       json(res, 500, { error: 'Error al consultar asignaciones' });
@@ -967,6 +957,8 @@ const routes = {
   'GET /api/athlete/routine/today': async (req, res) => {
     const user = await readSession(req);
     if (!user) return json(res, 401, { error: 'not signed in' });
+    const authz = await access.canAccessAthlete(user, user.id, 'view');
+    if (!authz.ok) return json(res, authz.status, { error: authz.error });
     const dateParam = new URL(req.url, 'http://x').searchParams.get('date');
     const targetDate = dateParam || new Date().toISOString().slice(0, 10);
     try {
@@ -987,6 +979,8 @@ const routes = {
   'POST /api/athlete/routine/confirm': async (req, res) => {
     const user = await readSession(req);
     if (!user) return json(res, 401, { error: 'not signed in' });
+    const authz = await access.canAccessAthlete(user, user.id, 'confirm');
+    if (!authz.ok) return json(res, authz.status, { error: authz.error });
     const body = await readBody(req);
     const { date, status, notes } = body;
     const targetDate = date || new Date().toISOString().slice(0, 10);

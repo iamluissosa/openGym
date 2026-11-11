@@ -33,6 +33,7 @@ import Library from "./views/Library.jsx";
 import Settings from "./views/Settings.jsx";
 import Admin from "./views/Admin.jsx";
 import CoachPortal from "./views/CoachPortal.jsx";
+import { canOpenCoachPortal } from "./lib/roles.js";
 
 bindUI(useUI); // lets the shared controls open sheets without importing the store at module scope
 
@@ -115,7 +116,7 @@ function Shell() {
               <Route
                 path="/coach"
                 element={
-                  user?.admin ? (
+                  canOpenCoachPortal(user) ? (
                     <CoachPortal />
                   ) : (
                     <Navigate to="/home" replace />

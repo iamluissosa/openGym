@@ -18,6 +18,7 @@ import {
   sendTestPush,
 } from "../lib/push.js";
 import { wakeLockSupported } from "../lib/wakelock.js";
+import { canOpenCoachPortal } from "../lib/roles.js";
 import { t, LANGS, INSTR_LANGS } from "../lib/i18n.js";
 import { DEMO, IS_DEMO, REPO } from "../lib/demo.js";
 import { MOBILE, shareExport, syncReminder } from "../lib/mobile.js";
@@ -234,7 +235,7 @@ export default function Settings() {
                 onClick={() => nav("/admin")}
               />
             )}
-            {user.admin && (
+            {canOpenCoachPortal(user) && (
               <Row
                 icon="clipboard"
                 iconTint="var(--acc)"
