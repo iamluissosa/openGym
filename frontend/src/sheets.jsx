@@ -20,6 +20,7 @@ import { buildPlanBundle, parsePlan, mergePlan, printPlan } from './lib/plan-sha
 import { estimate1RM, best1RM, is1RMRecord, REP_CAP } from './lib/onerm.js'
 import { nextPrescription, applyPrescription, policyFor, defaultIncrement, POLICIES_FOR, POLICY_NAME, POLICY_DESC, MAX_BW_SETS } from './lib/progression.js'
 import { MOBILE, shareExport } from './lib/mobile.js'
+import { IS_DEMO } from './lib/demo.js'
 
 const S = () => useStore.getState().S
 const update = (...a) => useStore.getState().update(...a)
@@ -47,9 +48,16 @@ export function loadStarterPlan() {
   const [push, pull, legs] = starterRoutines()
   update(st => {
     st.routines.push(push, pull, legs)
-    st.week[1] = push.id; st.week[3] = pull.id; st.week[5] = legs.id
+    if (IS_DEMO) {
+      st.week[1] = push.id
+      st.week[4] = pull.id
+    } else {
+      st.week[1] = push.id; st.week[3] = pull.id; st.week[5] = legs.id
+    }
   })
-  toast(t('Starter plan loaded — Mon Push · Wed Pull · Fri Legs'))
+  toast(IS_DEMO
+    ? t('Starter plan loaded — Mon Push · Thu Pull')
+    : t('Starter plan loaded — Mon Push · Wed Pull · Fri Legs'))
 }
 
 /* ============================ weight picker (shared: body weight + goal) ============================ */
@@ -731,7 +739,14 @@ export const dayOverrideSheet = iso => ui().openSheet(close => <DayOverride iso=
 
 function DayAssign({ day, close }) {
   const st = useStore(s => s.S)
-  const set = v => { update(s => { if (v) s.week[day] = v; else delete s.week[day] }); close() }
+  const set = v => {
+    if (IS_DEMO && day !== 1 && day !== 4) {
+      toast(t('Only Monday and Thursday can be scheduled in the demo'))
+      close()
+      return
+    }
+    update(s => { if (v) s.week[day] = v; else delete s.week[day] }); close()
+  }
   return <>
     <h3>{t(DAYN[day])}</h3>
     <div className="list">
@@ -743,7 +758,13 @@ function DayAssign({ day, close }) {
     </div>
   </>
 }
-export const dayAssignSheet = day => ui().openSheet(close => <DayAssign day={day} close={close} />)
+export const dayAssignSheet = day => {
+  if (IS_DEMO && day !== 1 && day !== 4) {
+    toast(t('Only Monday and Thursday can be scheduled in the demo'))
+    return
+  }
+  ui().openSheet(close => <DayAssign day={day} close={close} />)
+}
 
 /* ============================ workout detail ============================ */
 function WorkoutDetail({ w, close }) {

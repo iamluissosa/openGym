@@ -14,6 +14,7 @@ import { ACCENTS } from "./lib/format.js";
 import { setLang, useLang } from "./lib/i18n.js";
 import { setNav } from "./lib/nav.js";
 import { useWakeLock } from "./lib/wakelock.js";
+import { IS_DEMO } from "./lib/demo.js";
 import { startFlow } from "./sheets.jsx";
 import Icon from "./components/Icon.jsx";
 import TabBar from "./components/TabBar.jsx";
@@ -60,6 +61,7 @@ function Shell() {
   }, [S.lang]);
   useEffect(() => {
     document.documentElement.lang = S.lang || "en";
+    document.title = IS_DEMO ? "balackGym Demo" : "balackGym";
   }, [langV, S.lang]);
   // every tab/route change starts at the top of the page
   useEffect(() => {

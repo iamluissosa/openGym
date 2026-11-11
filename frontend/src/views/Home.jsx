@@ -31,6 +31,7 @@ import Icon from "../components/Icon.jsx";
 import { Button } from "../components/ui.jsx";
 import { glyphOf } from "../lib/glyphs.js";
 import DailyRoutineCard from "../components/DailyRoutineCard.jsx";
+import { IS_DEMO } from "../lib/demo.js";
 
 // Home = what to do now + a quick glance. Deep charts & history live in Stats.
 export default function Home() {
@@ -101,7 +102,7 @@ export default function Home() {
     <div className="narrow">
       <div className="hdr">
         <div>
-          <h1>{user ? t("Hi {0}", user.name) : "balackGym"}</h1>
+          <h1>{user ? t("Hi {0}", user.name) : (IS_DEMO ? "balackGym Demo" : "balackGym")}</h1>
           <div className="sub">
             {today.toLocaleDateString(dateLocale(), {
               weekday: "long",

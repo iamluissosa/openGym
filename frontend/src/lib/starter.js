@@ -1,6 +1,7 @@
 // The Push/Pull/Legs starter plan. Shared by the "Load starter plan" action in Settings
 // and by the demo build, which seeds a history on top of exactly these routines.
 import { uid } from './format.js'
+import { IS_DEMO } from './demo.js'
 
 const SPEC = [
   ['Push Day', 'barbell', [['0025', 4, 8], ['0047', 3, 10], ['0426', 3, 10], ['0334', 3, 12], ['0241', 3, 12], ['0251', 3, 10]]],
@@ -9,5 +10,10 @@ const SPEC = [
 ]
 
 // Fresh routine objects (new ids) — [push, pull, legs].
-export const starterRoutines = () =>
-  SPEC.map(([name, emoji, list]) => ({ id: uid(), name, emoji, ex: list.map(([id, sets, reps]) => ({ id, sets, reps, weight: 0 })) }))
+export const starterRoutines = (maxEx = IS_DEMO ? 2 : undefined) =>
+  SPEC.map(([name, emoji, list]) => ({
+    id: uid(),
+    name,
+    emoji,
+    ex: (maxEx ? list.slice(0, maxEx) : list).map(([id, sets, reps]) => ({ id, sets, reps, weight: 0 }))
+  }))

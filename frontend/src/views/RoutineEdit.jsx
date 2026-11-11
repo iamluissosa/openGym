@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useStore } from '../store/useStore.js'
+import { useUI } from '../store/useUI.js'
 import { exOr } from '../lib/exercises.js'
 import { uid } from '../lib/format.js'
 import { t } from '../lib/i18n.js'
@@ -13,6 +14,7 @@ import { Button, SelectRow } from '../components/ui.jsx'
 import { POLICIES_FOR, POLICY_NAME, POLICY_DESC } from '../lib/progression.js'
 import BodyMap from '../components/BodyMap.jsx'
 import { loadOfRoutine, rankOf, MUSCLE_NAME } from '../lib/muscles.js'
+import { IS_DEMO } from '../lib/demo.js'
 
 export default function RoutineEdit() {
   const nav = useNavigate()
@@ -94,7 +96,37 @@ export default function RoutineEdit() {
     })()}
 
     <div className="small dim row" style={{ margin: '10px 2px', gap: 5 }}><Icon name="link" style={{ fontSize: 13 }} />{t('Tap the link button on an exercise to superset it with the one above — you’ll do them back-to-back.')}</div>
-    <Button variant="primary" onClick={() => exercisePicker(ex => exConfigSheet(ex, null, cfg => edit(x => { x.push({ id: ex.id, ...cfg }) }), null, r))} icon="plus">{t('Add exercise')}</Button>
+    {(() => {
+      const isLimitReached = IS_DEMO && r.ex.length >= 2
+      return <>
+        <Button
+          variant="primary"
+          disabled={isLimitReached}
+          onClick={() => {
+            if (isLimitReached) {
+              useUI.getState().toast(t('In demo mode, up to 2 exercises per routine'))
+              return
+            }
+            exercisePicker(ex => exConfigSheet(ex, null, cfg => edit(x => {
+              if (IS_DEMO && x.length >= 2) {
+                useUI.getState().toast(t('In demo mode, up to 2 exercises per routine'))
+                return
+              }
+              x.push({ id: ex.id, ...cfg })
+            }), null, r))
+          }}
+          icon={isLimitReached ? "lock" : "plus"}
+        >
+          {isLimitReached ? t('Exercise limit reached (2 max)') : t('Add exercise')}
+        </Button>
+        {isLimitReached && (
+          <div className="small dim row" style={{ margin: '8px 2px', gap: 6, color: 'var(--yellow)', justifyContent: 'center' }}>
+            <Icon name="lock" style={{ fontSize: 13 }} />
+            {t('Demo limit: 2 exercises max per routine')}
+          </div>
+        )}
+      </>
+    })()}
     <div style={{ height: 10 }} />
     <Button variant="danger" onClick={() => confirmSheet({
       title: t('Delete routine?'), message: t('“{0}” and its exercises will be removed.', r.name), confirmText: t('Delete'), danger: true,

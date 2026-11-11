@@ -19,7 +19,7 @@ import {
 } from "../lib/push.js";
 import { wakeLockSupported } from "../lib/wakelock.js";
 import { t, LANGS, INSTR_LANGS } from "../lib/i18n.js";
-import { DEMO, REPO } from "../lib/demo.js";
+import { DEMO, IS_DEMO, REPO } from "../lib/demo.js";
 import { MOBILE, shareExport, syncReminder } from "../lib/mobile.js";
 import { loadStarterPlan, confirmSheet, importFromApp } from "../sheets.jsx";
 import Icon from "../components/Icon.jsx";
@@ -166,26 +166,14 @@ export default function Settings() {
         title={MOBILE ? t("Your data") : DEMO ? t("Demo") : t("Account")}
       >
         {MOBILE ? (
-          <>
-            <Row
-              icon="lock"
-              iconTint="var(--acc)"
-              title={t("All data stays on this phone")}
-              subtitle={t(
-                "No account, no cloud — back it up anytime with Export below."
-              )}
-            />
-            <Row
-              icon="rocket"
-              iconTint="var(--indigo)"
-              title={t("Self-host balackGym")}
-              subtitle={t(
-                "Passkey sign-in, sync across your devices, your own data."
-              )}
-              accessory="chevron"
-              onClick={() => window.open(REPO, "_blank", "noopener")}
-            />
-          </>
+          <Row
+            icon="lock"
+            iconTint="var(--acc)"
+            title={t("All data stays on this phone")}
+            subtitle={t(
+              "No account, no cloud — back it up anytime with Export below."
+            )}
+          />
         ) : DEMO ? (
           <>
             <Row
@@ -617,21 +605,23 @@ export default function Settings() {
         </Section>
       )}
 
-      <div
-        className="dim small"
-        style={{ textAlign: "center", marginTop: 4, lineHeight: 1.6 }}
-      >
-        balackGym · {t("free & open source (AGPL v3)")}
-        <br />
-        <a
-          href="https://github.com/iamluissosa/openGym"
-          target="_blank"
-          rel="noopener"
+      {!MOBILE && (
+        <div
+          className="dim small"
+          style={{ textAlign: "center", marginTop: 4, lineHeight: 1.6 }}
         >
-          source code
-        </a>{" "}
-        · exercise data: hasaneyldrm/exercises-dataset (CC)
-      </div>
+          {IS_DEMO ? "balackGym Demo" : "balackGym"} · {t("free & open source (AGPL v3)")}
+          <br />
+          <a
+            href="https://github.com/iamluissosa/openGym"
+            target="_blank"
+            rel="noopener"
+          >
+            source code
+          </a>{" "}
+          · exercise data: hasaneyldrm/exercises-dataset (CC)
+        </div>
+      )}
     </div>
   );
 }

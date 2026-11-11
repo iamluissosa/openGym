@@ -3,7 +3,7 @@ import { useUI } from '../store/useUI.js'
 import { webauthnOK, passkeyLogin, passkeyRegister, api, BIO } from '../lib/api.js'
 import { hasData } from '../store/useStore.js'
 import { t } from '../lib/i18n.js'
-import { DEMO, REPO } from '../lib/demo.js'
+import { DEMO, IS_DEMO, REPO } from '../lib/demo.js'
 import { useState, useRef, useEffect } from 'react'
 import Icon from '../components/Icon.jsx'
 import { Button } from '../components/ui.jsx'
@@ -52,7 +52,7 @@ export default function Login() {
     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
       <img src="icon-512.png" alt="balackGym" style={{ width: 84, height: 84, objectFit: 'contain', filter: 'drop-shadow(0 8px 20px rgba(220, 38, 38, .35))' }} />
     </div>
-    <h1 style={{ fontSize: 34, fontWeight: 700, letterSpacing: '-.028em', margin: '6px 0 4px' }}>balackGym</h1>
+    <h1 style={{ fontSize: 34, fontWeight: 700, letterSpacing: '-.028em', margin: '6px 0 4px' }}>{IS_DEMO ? 'balackGym Demo' : 'balackGym'}</h1>
   </>
   const wrap = { display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '78vh', textAlign: 'center' }
 
